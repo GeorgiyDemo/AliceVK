@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from pytils import numeral
-import vk,random,time,datetime,json,forecastio,requests,base64
+import vk,random,time,datetime,os,json,forecastio,requests,base64
 session = vk.Session(access_token=base64.b64decode('token').decode('utf-8'))
+admin_id = '257350143'
 #Настройка id конф
 conversations= {
 	'1':'2',
@@ -27,6 +28,13 @@ longi = api.messages.getLongPollServer(use_ssl=0,need_pts=1)
 ts = longi['ts']
 pts = longi['pts']
 wtf = longi['key']
+
+def check_dict(word):
+	try:
+		bike = base[word]
+		return bike
+	except:
+		return 0
 
 def print_(s):
     from pytils.third import six
@@ -86,9 +94,15 @@ while True:
             changed = '0'
         #пишем чо хотим
         message = str(ok['messages'][1]['body'])
-        if message == 'Доброе' or message == 'Доброе утро' or message == '🐱' or message == 'Жрать хочу':
-            api.messages.send(chat_id=ok['messages'][1]['chat_id'],message=base[message])
-            time.sleep(1)
+        owner_id = str(ok['messages'][1]['uid'])
+
+        if check_dict(message) != 0:
+        	api.messages.send(chat_id=ok['messages'][1]['chat_id'],message=base[message])
+        	time.sleep(1)
+
+        elif message == 'uptime' and owner_id == admin_id:
+        	up = os.popen('uptime').read()
+        	api.messages.send(chat_id=ok['messages'][1]['chat_id'],message=str(up))
 
         elif changed == 'обновила фотографию беседы' or changed == 'обновил фотографию беседы' or changed == 'удалил фотографию беседы' or changed == 'удалила фотографию беседы':
             api.messages.send(chat_id=ok['messages'][1]['chat_id'],message='Ну и зачем?')
@@ -101,4 +115,8 @@ while True:
                 api.messages.setChatPhoto(file=response)
             except:
                 time.sleep(2)
-    time.sleep(1)    
+    time.sleep(1)
+
+
+
+    
