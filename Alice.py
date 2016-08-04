@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from pytils import numeral
-import vk,random,time,datetime,os,json,forecastio,requests,base64
-session = vk.Session(access_token=base64.b64decode('token').decode('utf-8'))
+import vk,random,time,datetime,os,json,requests
+session = vk.Session(access_token='token')
 admin_id = '257350143'
 #Настройка id конф
 conversations= {
@@ -44,10 +44,8 @@ def print_(s):
         out = s.encode('UTF-8')
     return(out)
 
-#Поездка в СПБ 15.07.2016
-
-#Счетчик дней лета
-a = '2016-06-01'.split('-')
+#Счетчик дней до начала учебы
+a = '2016-09-01'.split('-')
 aa = datetime.date(int(a[0]),int(a[1]),int(a[2]))
 
 while True:
@@ -62,15 +60,19 @@ while True:
     for_logs = str(now_time.hour)+':'+str(now_time.minute)+':'+str(now_time.second)
     bb = datetime.date.today()
 
-    #Счетчик дней лета
-    cc = bb-aa
+    #Опять счетчик дней до начала учебы
+    cc = aa-bb
     dd = int(str(cc).split()[0])+1
+
+    #Работа с падежами числительных
+    days =  print_(numeral.choose_plural(int(dd), (u'день', u'дня', u'дней')))
+    left = print_(numeral.choose_plural(int(dd), (u'Остался', u'Осталось', u'Осталось')))
 
     #Названия чатиков
     chat_titles = {
-    '1': '2ПКС-215 | '+str(dd)+' день лета',
-    '2':'II Курс | '+str(dd)+' день лета',
-    '3':'I Курс | '+str(dd)+' день лета',
+    '1': '2ПКС-215 | '+left+' '+str(dd)+' '+ days+' лета',
+    '2':'II Курс | '+left+' '+str(dd)+' '+ days+' лета',
+    '3':'I Курс | '+left+' '+str(dd)+' '+ days+' лета',
     }
 
     for i in range(len(conversations)):
@@ -116,7 +118,3 @@ while True:
             except:
                 time.sleep(2)
     time.sleep(1)
-
-
-
-    
