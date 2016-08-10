@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from pytils import numeral
-import vk,random,time,datetime,os,json,requests
+import vk,random,time,datetime,os,json,requests,xlrd
 session = vk.Session(access_token='token')
 admin_id = '257350143'
 #Настройка id конф
@@ -44,6 +44,36 @@ def print_(s):
         out = s.encode('UTF-8')
     return(out)
 
+#Этот костыль надо нормально переписать
+def open_excel(path):
+	i = 5
+	flag = 1
+
+	router={
+	'IBAS.xlsx':'http://www.fa.ru/projects/itcolledge/entrant/Documents/ИБАС%20бюджет.xlsx',
+	'PKS.xlsx':'http://www.fa.ru/projects/itcolledge/entrant/Documents/ПКС%20бюджет.xlsx',
+	}
+	names={
+	'IBAS.xlsx':'ИБАС',
+	'PKS.xlsx':'ПКС',
+	}
+	dls = router[path]
+	resp = requests.get(dls)
+	output = open(path, 'wb')
+	output.write(resp.content)
+	output.close()
+
+	book = xlrd.open_workbook(path)
+	first_sheet = book.sheet_by_index(0)
+	DATA = first_sheet.cell(0,0).value+' ('+names[path]+')\n\n'
+	while i < 55:
+		velosiped = (first_sheet.cell(i,1).value).split(' ', 2)[0]+' '+(first_sheet.cell(i,1).value).split(' ', 2)[1]
+		DATA +=str(flag)+' '+velosiped+' '+str(first_sheet.cell(i,2).value)+'\n'
+		i = i + 1
+		flag = flag + 1
+	return DATA
+ 	
+
 #Счетчик дней до начала учебы
 a = '2016-09-01'.split('-')
 aa = datetime.date(int(a[0]),int(a[1]),int(a[2]))
@@ -70,9 +100,9 @@ while True:
 
     #Названия чатиков
     chat_titles = {
-    '1': '2ПКС-215 | '+left+' '+str(dd)+' '+ days+' лета',
-    '2':'II Курс | '+left+' '+str(dd)+' '+ days+' лета',
-    '3':'I Курс | '+left+' '+str(dd)+' '+ days+' лета',
+    '1': '2ПКС-215 | '+left+' '+str(dd)+' '+ days,
+    '2':'II Курс | '+left+' '+str(dd)+' '+ days,
+    '3':'I Курс | '+left+' '+str(dd)+' '+ days,
     }
 
     for i in range(len(conversations)):
@@ -101,6 +131,14 @@ while True:
         if check_dict(message) != 0:
         	api.messages.send(chat_id=ok['messages'][1]['chat_id'],message=base[message])
         	time.sleep(1)
+
+        elif message =='/ПКС' and owner_id != '13822995':
+        	api.messages.send(chat_id=ok['messages'][1]['chat_id'],message='Секундочку..')
+        	api.messages.send(chat_id=ok['messages'][1]['chat_id'],message=open_excel('PKS.xlsx'))
+
+        elif message =='/ИБАС' and owner_id != '13822995':
+        	api.messages.send(chat_id=ok['messages'][1]['chat_id'],message='Секундочку..')
+        	api.messages.send(chat_id=ok['messages'][1]['chat_id'],message=open_excel('IBAS.xlsx'))
 
         elif message == 'uptime' and owner_id == admin_id:
         	up = os.popen('uptime').read()
