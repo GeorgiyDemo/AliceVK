@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 from pytils import numeral
-import vk,random,time,datetime,os,json,requests,xlrd
+import vk,random,time,datetime,os,json,requests,xlrd,schedule
 session = vk.Session(access_token='token')
 admin_id = '257350143'
+DATA_PKS = 'ПКС котики :з'
+DATA_IBAS = 'ИБАС няшки <3'
 #Настройка id конф
 conversations= {
 	'1':'2',
@@ -44,40 +46,51 @@ def print_(s):
         out = s.encode('UTF-8')
     return(out)
 
-#Этот костыль надо нормально переписать
-def open_excel(path):
+#Этот костыль мы переписали просто на 10/10
+#Но пока только временное решение
+def open_excel():
+	global DATA_PKS
+	global DATA_IBAS
 	i = 5
-	flag = 1
+	z = 6
 
-	router={
-	'IBAS.xlsx':'http://www.fa.ru/projects/itcolledge/entrant/Documents/ИБАС%20бюджет.xlsx',
-	'PKS.xlsx':'http://www.fa.ru/projects/itcolledge/entrant/Documents/ПКС%20бюджет.xlsx',
-	}
-	names={
-	'IBAS.xlsx':'ИБАС',
-	'PKS.xlsx':'ПКС',
-	}
-	dls = router[path]
-	resp = requests.get(dls)
-	output = open(path, 'wb')
+	#Работаем с ПКС
+	url_PKS = 'http://www.fa.ru/projects/itcolledge/entrant/Documents/ПКС%20бюджет.xlsx'
+	resp = requests.get(url_PKS)
+	output = open('PKS.xlsx', 'wb')
 	output.write(resp.content)
 	output.close()
 
-	book = xlrd.open_workbook(path)
+	#Работаем с ИБАС
+	url_IBAS = 'http://www.fa.ru/projects/itcolledge/entrant/Documents/ИБАС%20бюджет.xlsx'
+	resp = requests.get(url_IBAS)
+	output = open('IBAS.xlsx', 'wb')
+	output.write(resp.content)
+	output.close()
+
+	#Парсим xlsx ПКС
+	book = xlrd.open_workbook('PKS.xlsx')
 	first_sheet = book.sheet_by_index(0)
-	DATA = first_sheet.cell(0,0).value+' ('+names[path]+')\n\n'
+	DATA_PKS = first_sheet.cell(0,0).value+' (ПКС)\n\n'
 	while i < 55:
 		velosiped = (first_sheet.cell(i,1).value).split(' ', 2)[0]+' '+(first_sheet.cell(i,1).value).split(' ', 2)[1]
-		DATA +=str(flag)+' '+velosiped+' '+str(first_sheet.cell(i,2).value)+'\n'
+		DATA_PKS +=str(i-4)+' '+velosiped+' '+str(first_sheet.cell(i,2).value)+'\n'
 		i = i + 1
-		flag = flag + 1
-	return DATA
- 	
+
+	#Парсим xlsx ИБАС
+	book = xlrd.open_workbook('IBAS.xlsx')
+	first_sheet = book.sheet_by_index(0)
+	DATA_IBAS = first_sheet.cell(0,0).value+' (ИБАС)\n\n'
+	while z < 55:
+		velosiped = (first_sheet.cell(z,1).value).split(' ', 2)[0]+' '+(first_sheet.cell(z,1).value).split(' ', 2)[1]
+		DATA_IBAS +=str(z-4)+' '+velosiped+' '+str(first_sheet.cell(z,2).value)+'\n'
+		z = z + 1
 
 #Счетчик дней до начала учебы
 a = '2016-09-01'.split('-')
 aa = datetime.date(int(a[0]),int(a[1]),int(a[2]))
 
+schedule.every(10).minutes.do(open_excel)
 while True:
 
 	#Работа с временем/датой
@@ -93,6 +106,9 @@ while True:
     #Опять счетчик дней до начала учебы
     cc = aa-bb
     dd = int(str(cc).split()[0])+1
+
+    #Cron-подобная фигня
+    schedule.run_pending()
 
     #Работа с падежами числительных
     days =  print_(numeral.choose_plural(int(dd), (u'день', u'дня', u'дней')))
@@ -133,12 +149,10 @@ while True:
         	time.sleep(1)
 
         elif message =='/ПКС' and owner_id != '13822995':
-        	api.messages.send(chat_id=ok['messages'][1]['chat_id'],message='Секундочку..')
-        	api.messages.send(chat_id=ok['messages'][1]['chat_id'],message=open_excel('PKS.xlsx'))
+        	api.messages.send(chat_id=ok['messages'][1]['chat_id'],message=DATA_PKS)
 
         elif message =='/ИБАС' and owner_id != '13822995':
-        	api.messages.send(chat_id=ok['messages'][1]['chat_id'],message='Секундочку..')
-        	api.messages.send(chat_id=ok['messages'][1]['chat_id'],message=open_excel('IBAS.xlsx'))
+        	api.messages.send(chat_id=ok['messages'][1]['chat_id'],message=DATA_IBAS)
 
         elif message == 'uptime' and owner_id == admin_id:
         	up = os.popen('uptime').read()
