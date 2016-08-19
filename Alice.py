@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 from pytils import numeral
-import vk,random,time,datetime,os,json,requests,xlrd,schedule
+import vk,random,time,datetime,os,json,requests,xlrd
 session = vk.Session(access_token='token')
 admin_id = '257350143'
-DATA_PKS = 'ПКС котики :з'
-DATA_IBAS = 'ИБАС няшки <3'
+
 #Настройка id конф
 conversations= {
 	'1':'2',
@@ -24,6 +23,7 @@ base={
     'Жрать хочу':'Диктуй адрес',
     'Доброе утро':'Доброе)',
 }
+
 #Настройка лонгпула
 api = vk.API(session)
 longi = api.messages.getLongPollServer(use_ssl=0,need_pts=1)
@@ -46,51 +46,96 @@ def print_(s):
         out = s.encode('UTF-8')
     return(out)
 
-#Этот костыль мы переписали просто на 10/10
-#Но пока только временное решение
-def open_excel():
-	global DATA_PKS
-	global DATA_IBAS
-	i = 5
-	z = 6
+#Погодка
+def get_weather():
 
-	#Работаем с ПКС
-	url_PKS = 'http://www.fa.ru/projects/itcolledge/entrant/Documents/ПКС%20бюджет.xlsx'
-	resp = requests.get(url_PKS)
-	output = open('PKS.xlsx', 'wb')
-	output.write(resp.content)
-	output.close()
+    def translate(word):
 
-	#Работаем с ИБАС
-	url_IBAS = 'http://www.fa.ru/projects/itcolledge/entrant/Documents/ИБАС%20бюджет.xlsx'
-	resp = requests.get(url_IBAS)
-	output = open('IBAS.xlsx', 'wb')
-	output.write(resp.content)
-	output.close()
+        super_translate ={
 
-	#Парсим xlsx ПКС
-	book = xlrd.open_workbook('PKS.xlsx')
-	first_sheet = book.sheet_by_index(0)
-	DATA_PKS = first_sheet.cell(0,0).value+' (ПКС)\n\n'
-	while i < 55:
-		velosiped = (first_sheet.cell(i,1).value).split(' ', 2)[0]+' '+(first_sheet.cell(i,1).value).split(' ', 2)[1]
-		DATA_PKS +=str(i-4)+' '+velosiped+' '+str(first_sheet.cell(i,2).value)+'\n'
-		i = i + 1
+        'clear':'Ясно',
+        'cloudy':'Облачно',
+        'overcast':'Пасмурно',
+        'partly-cloudy':'Облачная погода с прояснениями, переменная облачность',
+        'cloudy-and-light-rain':'Облачно, возможны небольшие осадки',
+        'overcast-and-light-rain':'Пасмурно, возможны небольшие осадки',
+        'partly-cloudy-and-rain':'Частично облачно, дождь',
+        'partly-cloudy-and-light-rain':'Частично облачно, возможны небольшие осадки',
+        }
 
-	#Парсим xlsx ИБАС
-	book = xlrd.open_workbook('IBAS.xlsx')
-	first_sheet = book.sheet_by_index(0)
-	DATA_IBAS = first_sheet.cell(0,0).value+' (ИБАС)\n\n'
-	while z < 55:
-		velosiped = (first_sheet.cell(z,1).value).split(' ', 2)[0]+' '+(first_sheet.cell(z,1).value).split(' ', 2)[1]
-		DATA_IBAS +=str(z-4)+' '+velosiped+' '+str(first_sheet.cell(z,2).value)+'\n'
-		z = z + 1
+        try:
+            smysol = super_translate[word]
+            return smysol
+        except:
+            return word
+
+    headers = {
+
+    #Ну эти хедеры я чисто с прилки я.погода взял
+    'X-Yandex-Weather-Device-ID': 'UUID',
+    'X-Yandex-Weather-Token': 'token_WTF?!',
+    'X-Yandex-Weather-Device': 'os=iPhone OS; os_version=9.0.2; manufacturer=Apple; model=iPad; device_id=UUID; uuid=???"',
+    'X-Yandex-Weather-Client': 'YandexWeatherIOS/2051',
+    'X-Yandex-Weather-UUID': 'UUID',
+    'X-Yandex-Weather-Timestamp': '1471287200'
+    }
+
+    my_json = requests.get('https://api.weather.yandex.ru/v1/forecast?ext_kind=weather&lang=ru_RU&geoid=213',headers=headers).json()
+    sunrise = my_json['forecasts'][0]['sunrise']
+    sunset = my_json['forecasts'][0]['sunset']
+    parts = my_json['forecasts'][0]['parts']
+    city = my_json['geo_object']['province']['name']
+
+    now = my_json['fact']
+    temp = str(now['temp'])+'°C'
+    feels = str(now['feels_like'])+'°C'
+    wind_speed = str(now['wind_speed'])+' м/с'
+    humidity = str(now['humidity'])+'%'
+    pressure_mm = str(now['pressure_mm'])+' мм рт. ст.'
+    morning = str(parts['morning']['temp_avg'])+'°C'
+    day = str(parts['day']['temp_avg'])+'°C'
+    evening = str(parts['evening']['temp_avg'])+'°C'
+    description = translate(now['condition'])
+    formatting_parts = '\nУтро: '+morning+'\nДень: '+day+'\nВечер: '+evening
+    formatting_set = '\nВосход: '+sunrise+'\nЗакат: ' +sunset
+    out = city+'\n'+description+'\nСейчас: '+temp+'\nПо ощущениям: '+feels+'\nСкорость ветра: '+wind_speed+'\nВлажность: '+humidity+'\nДавление: '+pressure_mm+'\n'+formatting_parts+'\n'+formatting_set
+
+    return out
+
+#Чет опять фигню сделали
+def open_excel(path):
+    i = 4
+
+    welcome_message = '\nМои поздравления <3'
+    
+    router={
+    'IBAS.xlsx':'http://www.fa.ru/projects/itcolledge/entrant/Documents/ИБАС%20(бюджет,%20к%20зачислению).xlsx',
+    'PKS.xlsx':'http://www.fa.ru/projects/itcolledge/entrant/Documents/ПКС%20(бюджет,%20к%20зачислению).xlsx',
+    }
+    names={
+    'IBAS.xlsx':'ИБАС',
+    'PKS.xlsx':'ПКС',
+    }
+    dls = router[path]
+    resp = requests.get(dls)
+    output = open(path, 'wb')
+    output.write(resp.content)
+    output.close()
+
+    book = xlrd.open_workbook(path)
+    first_sheet = book.sheet_by_index(0)
+    DATA = first_sheet.cell(0,0).value+' ('+names[path]+')\n\n'
+    while i < 54:
+        velosiped = (first_sheet.cell(i,1).value).split(' ', 2)[0]+' '+(first_sheet.cell(i,1).value).split(' ', 2)[1]
+        DATA +=velosiped+'\n'
+        i = i + 1
+    DATA = DATA + welcome_message
+    return DATA
 
 #Счетчик дней до начала учебы
 a = '2016-09-01'.split('-')
 aa = datetime.date(int(a[0]),int(a[1]),int(a[2]))
 
-schedule.every(10).minutes.do(open_excel)
 while True:
 
 	#Работа с временем/датой
@@ -106,9 +151,6 @@ while True:
     #Опять счетчик дней до начала учебы
     cc = aa-bb
     dd = int(str(cc).split()[0])+1
-
-    #Cron-подобная фигня
-    schedule.run_pending()
 
     #Работа с падежами числительных
     days =  print_(numeral.choose_plural(int(dd), (u'день', u'дня', u'дней')))
@@ -140,7 +182,6 @@ while True:
             changed = ok['messages'][1]['body'].partition(' ')[2].partition(' ')[2]
         except:
             changed = '0'
-        #пишем чо хотим
         message = str(ok['messages'][1]['body'])
         owner_id = str(ok['messages'][1]['uid'])
 
@@ -148,11 +189,17 @@ while True:
         	api.messages.send(chat_id=ok['messages'][1]['chat_id'],message=base[message])
         	time.sleep(1)
 
-        elif message =='/ПКС' and owner_id != '13822995':
-        	api.messages.send(chat_id=ok['messages'][1]['chat_id'],message=DATA_PKS)
+        elif message =='/ПКС':
+            api.messages.send(chat_id=ok['messages'][1]['chat_id'],message='Секундочку..')
+            api.messages.send(chat_id=ok['messages'][1]['chat_id'],message=open_excel('PKS.xlsx'))
 
-        elif message =='/ИБАС' and owner_id != '13822995':
-        	api.messages.send(chat_id=ok['messages'][1]['chat_id'],message=DATA_IBAS)
+        elif message =='/ИБАС':
+            api.messages.send(chat_id=ok['messages'][1]['chat_id'],message='Секундочку..')
+            api.messages.send(chat_id=ok['messages'][1]['chat_id'],message=open_excel('IBAS.xlsx'))
+
+        elif message =='/weather' or message =='/погода':
+            mess = get_weather()
+            api.messages.send(chat_id=ok['messages'][1]['chat_id'],message=mess)
 
         elif message == 'uptime' and owner_id == admin_id:
         	up = os.popen('uptime').read()
