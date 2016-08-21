@@ -2,6 +2,7 @@
 from pytils import numeral
 import vk,random,time,datetime,os,json,requests,xlrd
 session = vk.Session(access_token='token')
+api = vk.API(session)
 admin_id = '257350143'
 
 #Настройка id конф
@@ -25,7 +26,6 @@ base={
 }
 
 #Настройка лонгпула
-api = vk.API(session)
 longi = api.messages.getLongPollServer(use_ssl=0,need_pts=1)
 ts = longi['ts']
 pts = longi['pts']
@@ -52,10 +52,10 @@ def get_weather():
     def translate(word):
 
         super_translate ={
-
         'clear':'Ясно',
         'cloudy':'Облачно',
         'overcast':'Пасмурно',
+        'cloudy-and-rain':'Облачно, дождь',
         'partly-cloudy':'Облачная погода с прояснениями, переменная облачность',
         'cloudy-and-light-rain':'Облачно, возможны небольшие осадки',
         'overcast-and-light-rain':'Пасмурно, возможны небольшие осадки',
@@ -70,11 +70,10 @@ def get_weather():
             return word
 
     headers = {
-
-    #Ну эти хедеры я чисто с прилки я.погода взял
+    #Хедеры с Я.Погодки
     'X-Yandex-Weather-Device-ID': 'UUID',
-    'X-Yandex-Weather-Token': 'token_WTF?!',
-    'X-Yandex-Weather-Device': 'os=iPhone OS; os_version=9.0.2; manufacturer=Apple; model=iPad; device_id=UUID; uuid=???"',
+    'X-Yandex-Weather-Token': 'token',
+    'X-Yandex-Weather-Device': 'os=iPhone OS; os_version=9.0.2; manufacturer=Apple; model=iPad; device_id=ID; uuid=UUID"',
     'X-Yandex-Weather-Client': 'YandexWeatherIOS/2051',
     'X-Yandex-Weather-UUID': 'UUID',
     'X-Yandex-Weather-Timestamp': '1471287200'
@@ -102,7 +101,7 @@ def get_weather():
 
     return out
 
-#Чет опять фигню сделали
+#Я это даже исправлять не хочу :P
 def open_excel(path):
     i = 4
 
@@ -112,10 +111,12 @@ def open_excel(path):
     'IBAS.xlsx':'http://www.fa.ru/projects/itcolledge/entrant/Documents/ИБАС%20(бюджет,%20к%20зачислению).xlsx',
     'PKS.xlsx':'http://www.fa.ru/projects/itcolledge/entrant/Documents/ПКС%20(бюджет,%20к%20зачислению).xlsx',
     }
+
     names={
     'IBAS.xlsx':'ИБАС',
     'PKS.xlsx':'ПКС',
     }
+
     dls = router[path]
     resp = requests.get(dls)
     output = open(path, 'wb')
@@ -129,6 +130,7 @@ def open_excel(path):
         velosiped = (first_sheet.cell(i,1).value).split(' ', 2)[0]+' '+(first_sheet.cell(i,1).value).split(' ', 2)[1]
         DATA +=velosiped+'\n'
         i = i + 1
+
     DATA = DATA + welcome_message
     return DATA
 
@@ -163,11 +165,14 @@ while True:
     '3':'I Курс | '+left+' '+str(dd)+' '+ days,
     }
 
+    #Чекаем названия бесед
     for i in range(len(conversations)):
     	time.sleep(1)
     	conf_id = conversations[str(i+1)]
     	name_now = api.messages.getChat(chat_id=conf_id)
     	check = name_now['title']
+
+    	#Если надо, то меняем название
     	if check != chat_titles[str(i+1)]:
     		try:
     			api.messages.editChat(chat_id=conf_id,title=chat_titles[str(i+1)])
@@ -177,6 +182,8 @@ while True:
     
     ok = api.messages.getLongPollHistory(ts=ts,pts=pts,preview_length=0)
     pts= ok['new_pts']
+
+    #Чекаем входящие сообщения
     if ok['messages'] != [0]:
         try:
             changed = ok['messages'][1]['body'].partition(' ')[2].partition(' ')[2]
