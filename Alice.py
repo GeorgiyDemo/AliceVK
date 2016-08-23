@@ -55,8 +55,8 @@ def get_weather():
         'clear':'Ясно',
         'cloudy':'Облачно',
         'overcast':'Пасмурно',
-        'cloudy-and-rain':'Облачно, дождь',
-        'partly-cloudy':'Облачная погода с прояснениями, переменная облачность',
+        'cloudy-and-rain':'Облачно, дождь, тлен',
+        'partly-cloudy':'Облачность с прояснениями, переменная облачность',
         'cloudy-and-light-rain':'Облачно, возможны небольшие осадки',
         'overcast-and-light-rain':'Пасмурно, возможны небольшие осадки',
         'partly-cloudy-and-rain':'Частично облачно, дождь',
@@ -73,7 +73,7 @@ def get_weather():
     #Хедеры с Я.Погодки
     'X-Yandex-Weather-Device-ID': 'UUID',
     'X-Yandex-Weather-Token': 'token',
-    'X-Yandex-Weather-Device': 'os=iPhone OS; os_version=9.0.2; manufacturer=Apple; model=iPad; device_id=ID; uuid=UUID"',
+    'X-Yandex-Weather-Device': 'os=iPhone OS; os_version=9.0.2; manufacturer=Apple; model=iPad; device_id=UUID; uuid=UUID"',
     'X-Yandex-Weather-Client': 'YandexWeatherIOS/2051',
     'X-Yandex-Weather-UUID': 'UUID',
     'X-Yandex-Weather-Timestamp': '1471287200'
@@ -152,7 +152,7 @@ while True:
 
     #Опять счетчик дней до начала учебы
     cc = aa-bb
-    dd = int(str(cc).split()[0])+1
+    dd = int(str(cc).split()[0])
 
     #Работа с падежами числительных
     days =  print_(numeral.choose_plural(int(dd), (u'день', u'дня', u'дней')))
@@ -160,7 +160,7 @@ while True:
 
     #Названия чатиков
     chat_titles = {
-    '1': '2ПКС-215 | '+left+' '+str(dd)+' '+ days,
+    '1': '2ПКС-215 (RIP) | '+left+' '+str(dd)+' '+ days,
     '2':'II Курс | '+left+' '+str(dd)+' '+ days,
     '3':'I Курс | '+left+' '+str(dd)+' '+ days,
     }
