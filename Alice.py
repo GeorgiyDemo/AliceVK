@@ -11,14 +11,12 @@ conversations= {
 	'2':'3',
 	'3':'4',
 }
-
 #Настройка аватарок в конфах
 photoconf={
     '2':'./KIP/4.jpg',
     '3':'./KIP/2.jpg',
     '4':'./KIP/1.jpg',
 }
-
 #База ответов
 base={
     '🐱':'Мур :3',
@@ -39,14 +37,6 @@ def check_dict(word):
 		return bike
 	except:
 		return 0
-
-def print_(s):
-    from pytils.third import six
-    if six.PY3:
-        out = s
-    else:
-        out = s.encode('UTF-8')
-    return(out)
 
 #Погодка
 def get_weather():
@@ -72,11 +62,10 @@ def get_weather():
             return word
 
     headers = {
-
     #Хедеры с Я.Погодки
-    'X-Yandex-Weather-Device-ID': 'id',
-    'X-Yandex-Weather-Token': 'token',
-    'X-Yandex-Weather-Device': 'os=iPhone OS; os_version=9.0.2; manufacturer=Apple; model=iPad; device_id=id; uuid=UUID"',
+    'X-Yandex-Weather-Device-ID': 'Device-ID',
+    'X-Yandex-Weather-Token': 'Token',
+    'X-Yandex-Weather-Device': 'os=iPhone OS; os_version=9.0.2; manufacturer=Apple; model=iPad; device_id=Device-ID; uuid=uuid"',
     'X-Yandex-Weather-Client': 'YandexWeatherIOS/2051',
     'X-Yandex-Weather-UUID': 'UUID',
     'X-Yandex-Weather-Timestamp': '1471287200'
@@ -105,7 +94,7 @@ def get_weather():
     return out
 
 #Счетчик дней до начала учебы
-a = '2016-09-01'.split('-')
+a = '2016-08-30'.split('-')
 aa = datetime.date(int(a[0]),int(a[1]),int(a[2]))
 
 while True:
@@ -120,19 +109,15 @@ while True:
     for_logs = str(now_time.hour)+':'+str(now_time.minute)+':'+str(now_time.second)
     bb = datetime.date.today()
 
-    #Опять счетчик дней до начала учебы
-    cc = aa-bb
+    #Счетчик дней учебы
+    cc = bb-aa
     dd = int(str(cc).split()[0])
-
-    #Работа с падежами числительных
-    days =  print_(numeral.choose_plural(int(dd), (u'день', u'дня', u'дней')))
-    left = print_(numeral.choose_plural(int(dd), (u'Остался', u'Осталось', u'Осталось')))
 
     #Названия чатиков
     chat_titles = {
-    '1': '2ПКС-215 (RIP) | '+left+' '+str(dd)+' '+ days,
-    '2':'II Курс | '+left+' '+str(dd)+' '+ days,
-    '3':'I Курс | '+left+' '+str(dd)+' '+ days,
+    '1': 'Группа расформирована',
+    '2':'II Курс | '+str(dd)+' день учебы',
+    '3':'I Курс | '+str(dd)+' день учебы',
     }
 
     #Чекаем названия бесед
