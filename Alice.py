@@ -1,3 +1,4 @@
+
 # -*- coding: utf-8 -*-
 from pytils import numeral
 import vk,random,time,datetime,os,json,requests,xlrd
@@ -7,9 +8,9 @@ admin_id = '257350143'
 
 #Настройка id конф
 conversations= {
-	'1':'2',
-	'2':'3',
-	'3':'4',
+    '1':'2',
+    '2':'3',
+    '3':'4',
 }
 #Настройка аватарок в конфах
 photoconf={
@@ -22,6 +23,8 @@ base={
     '🐱':'Мур :3',
     'Доброе':'Доброе 🐱',
     'Жрать хочу':'Диктуй адрес',
+    'все уроды':'Согласна',
+    'Все уроды':'Согласна!',
     'Доброе утро':'Доброе)',
 }
 
@@ -32,11 +35,11 @@ pts = longi['pts']
 wtf = longi['key']
 
 def check_dict(word):
-	try:
-		bike = base[word]
-		return bike
-	except:
-		return 0
+    try:
+        bike = base[word]
+        return bike
+    except:
+        return 0
 
 #Погодка
 def get_weather():
@@ -99,7 +102,7 @@ aa = datetime.date(int(a[0]),int(a[1]),int(a[2]))
 
 while True:
 
-	#Работа с временем/датой
+    #Работа с временем/датой
     now_date = datetime.date.today()
     now_time = datetime.datetime.now()
     day = now_date.isoweekday()
@@ -122,18 +125,18 @@ while True:
 
     #Чекаем названия бесед
     for i in range(len(conversations)):
-    	time.sleep(1)
-    	conf_id = conversations[str(i+1)]
-    	name_now = api.messages.getChat(chat_id=conf_id)
-    	check = name_now['title']
+        time.sleep(1)
+        conf_id = conversations[str(i+1)]
+        name_now = api.messages.getChat(chat_id=conf_id)
+        check = name_now['title']
 
-    	#Если надо, то меняем название
-    	if check != chat_titles[str(i+1)]:
-    		try:
-    			api.messages.editChat(chat_id=conf_id,title=chat_titles[str(i+1)])
-    			print('['+for_logs+'] Изменили название беседы №'+str(i+1)+' c "'+check+'" на "'+chat_titles[str(i+1)]+'"')
-    		except:
-    			print('['+for_logs+'] (!) Что-то пошло не так при смене названия беседы №'+str(i+1))
+        #Если надо, то меняем название
+        if check != chat_titles[str(i+1)]:
+            try:
+                api.messages.editChat(chat_id=conf_id,title=chat_titles[str(i+1)])
+                print('['+for_logs+'] Изменили название беседы №'+str(i+1)+' c "'+check+'" на "'+chat_titles[str(i+1)]+'"')
+            except:
+                print('['+for_logs+'] (!) Что-то пошло не так при смене названия беседы №'+str(i+1))
     
     ok = api.messages.getLongPollHistory(ts=ts,pts=pts,preview_length=0)
     pts= ok['new_pts']
@@ -148,16 +151,16 @@ while True:
         owner_id = str(ok['messages'][1]['uid'])
 
         if check_dict(message) != 0:
-        	api.messages.send(chat_id=ok['messages'][1]['chat_id'],message=base[message])
-        	time.sleep(1)
+            api.messages.send(chat_id=ok['messages'][1]['chat_id'],message=base[message])
+            time.sleep(1)
 
         elif message =='/weather' or message =='/погода':
             mess = get_weather()
             api.messages.send(chat_id=ok['messages'][1]['chat_id'],message=mess)
 
         elif message == 'uptime' and owner_id == admin_id:
-        	up = os.popen('uptime').read()
-        	api.messages.send(chat_id=ok['messages'][1]['chat_id'],message=str(up))
+            up = os.popen('uptime').read()
+            api.messages.send(chat_id=ok['messages'][1]['chat_id'],message=str(up))
 
         elif changed == 'обновила фотографию беседы' or changed == 'обновил фотографию беседы' or changed == 'удалил фотографию беседы' or changed == 'удалила фотографию беседы':
             api.messages.send(chat_id=ok['messages'][1]['chat_id'],message='Ну и зачем?')
