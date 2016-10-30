@@ -47,15 +47,33 @@ def get_weather():
     def translate(word):
 
         super_translate ={
-        'clear':'Ясно',
-        'cloudy':'Облачно',
-        'overcast':'Пасмурно',
-        'cloudy-and-rain':'Облачно, дождь, тлен',
-        'partly-cloudy':'Облачность с прояснениями, переменная облачность',
-        'cloudy-and-light-rain':'Облачно, возможны небольшие осадки',
-        'overcast-and-light-rain':'Пасмурно, возможны небольшие осадки',
-        'partly-cloudy-and-rain':'Частично облачно, дождь',
-        'partly-cloudy-and-light-rain':'Частично облачно, возможны небольшие осадки',
+
+        "clear": "Ясно",
+        "mostly-clear": "Малооблачно",
+        "partly-cloudy": "Малооблачно",
+        "overcast": "Пасмурно",
+        "partly-cloudy-and-light-rain": "Небольшой дождь",
+        "partly-cloudy-and-rain": "Дождь",
+        "overcast-and-rain": "Сильный дождь",
+        "overcast-thunderstorms-with-rain": "Сильный дождь, гроза",
+        "cloudy": "Облачно с прояснениями",
+        "cloudy-and-light-rain": "Небольшой дождь",
+        "overcast-and-light-rain": "Небольшой дождь",
+        "cloudy-and-rain": "Дождь",
+        "overcast-and-wet-snow": "Дождь со снегом",
+        "partly-cloudy-and-light-snow": "Небольшой снег",
+        "partly-cloudy-and-snow": "Снег",
+        "overcast-and-snow": "Снегопад",
+        "cloudy-and-light-snow": "Небольшой снег",
+        "overcast-and-light-snow": "Небольшой снег",
+        "cloudy-and-snow": "Снег",
+        "full-moon": "Полнолуние",
+        "decreasing-moon": "Убывающая луна",
+        "last-quarter": "Последняя четверть",
+        "new-moon": "Новолуние",
+        "growing-moon": "Растущая луна",
+        "first-quarter": "Первая четверть",
+    
         }
 
         try:
