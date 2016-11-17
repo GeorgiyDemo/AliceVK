@@ -1,4 +1,3 @@
-
 # -*- coding: utf-8 -*-
 from pytils import numeral
 import vk,random,time,datetime,os,json,requests,xlrd
@@ -8,13 +7,13 @@ admin_id = '257350143'
 
 #Настройка id конф
 conversations= {
-    '1':'2',
+    '1':'11',
     '2':'3',
     '3':'4',
 }
 #Настройка аватарок в конфах
 photoconf={
-    '2':'./KIP/4.jpg',
+    '11':'./KIP/4.jpg',
     '3':'./KIP/2.jpg',
     '4':'./KIP/1.jpg',
 }
@@ -136,7 +135,7 @@ while True:
 
     #Названия чатиков
     chat_titles = {
-    '1': 'Группа расформирована',
+    '1': '2ПКС-115 | '+str(dd)+' день учебы',
     '2':'II Курс | '+str(dd)+' день учебы',
     '3':'I Курс | '+str(dd)+' день учебы',
     }
