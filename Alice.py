@@ -40,6 +40,14 @@ def check_dict(word):
     except:
         return 0
 
+def print_(s):
+	from pytils.third import six
+	if six.PY3:
+		out = s
+	else:
+		out = s.encode('UTF-8')
+	return(out)		
+
 #Погодка
 def get_weather():
 
@@ -113,8 +121,8 @@ def get_weather():
 
     return out
 
-#Счетчик дней до начала учебы
-a = '2016-08-30'.split('-')
+#Счетчик дней до Нового Года
+a = '2017-01-01'.split('-')
 aa = datetime.date(int(a[0]),int(a[1]),int(a[2]))
 
 while True:
@@ -130,14 +138,17 @@ while True:
     bb = datetime.date.today()
 
     #Счетчик дней учебы
-    cc = bb-aa
+    cc = aa-bb
     dd = int(str(cc).split()[0])
+
+    #Работа с падежами числительных
+    days =  print_(numeral.choose_plural(int(dd), (u'день', u'дня', u'дней')))
 
     #Названия чатиков
     chat_titles = {
-    '1': '2ПКС-115 | '+str(dd)+' день учебы',
-    '2':'II Курс | '+str(dd)+' день учебы',
-    '3':'I Курс | '+str(dd)+' день учебы',
+    '1': '2ПКС-115 | До НГ '+ str(dd)+' '+days,
+    '2':'II Курс | До НГ '+ str(dd)+' '+days,
+    '3':'I Курс | До НГ '+ str(dd)+' '+days,
     }
 
     #Чекаем названия бесед
