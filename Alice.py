@@ -121,9 +121,13 @@ def get_weather():
 
     return out
 
-#Счетчик дней до Нового Года
-a = '2017-01-01'.split('-')
+#Счетчик дней до зимней сессии
+a = '2017-01-19'.split('-')
 aa = datetime.date(int(a[0]),int(a[1]),int(a[2]))
+
+#Счетчик дней учебы для I курса
+afix = '2016-08-30'.split('-')
+aafix = datetime.date(int(afix[0]),int(afix[1]),int(afix[2]))
 
 while True:
 
@@ -137,18 +141,21 @@ while True:
     for_logs = str(now_time.hour)+':'+str(now_time.minute)+':'+str(now_time.second)
     bb = datetime.date.today()
 
-    #Счетчик дней учебы
+    #Счетчик 1
     cc = aa-bb
     dd = int(str(cc).split()[0])
+    #Счетчик 2
+    ccfix = bb-aafix
+    ddfix = int(str(ccfix).split()[0])
 
     #Работа с падежами числительных
     days =  print_(numeral.choose_plural(int(dd), (u'день', u'дня', u'дней')))
 
     #Названия чатиков
     chat_titles = {
-    '1': '2ПКС-115 | До НГ '+ str(dd)+' '+days,
-    '2':'II Курс | До НГ '+ str(dd)+' '+days,
-    '3':'I Курс | До НГ '+ str(dd)+' '+days,
+    '1': '2ПКС-115 | До Сессии '+ str(dd)+' '+days,
+    '2':'II Курс | До Сессии '+ str(dd)+' '+days,
+    '3':'I Курс | '+str(ddfix)+' день учебы',
     }
 
     #Чекаем названия бесед
