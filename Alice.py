@@ -121,8 +121,8 @@ def get_weather():
 
     return out
 
-#Счетчик дней до зимней сессии
-a = '2017-01-19'.split('-')
+#Счетчик дней до конца зимних каникул
+a = '2017-02-09'.split('-')
 aa = datetime.date(int(a[0]),int(a[1]),int(a[2]))
 
 #Счетчик дней учебы для I курса
@@ -141,10 +141,10 @@ while True:
     for_logs = str(now_time.hour)+':'+str(now_time.minute)+':'+str(now_time.second)
     bb = datetime.date.today()
 
-    #Счетчик 1
+    #Счетчик дней учебы
     cc = aa-bb
     dd = int(str(cc).split()[0])
-    #Счетчик 2
+    #
     ccfix = bb-aafix
     ddfix = int(str(ccfix).split()[0])
 
@@ -153,8 +153,8 @@ while True:
 
     #Названия чатиков
     chat_titles = {
-    '1': '2ПКС-115 | До Сессии '+ str(dd)+' '+days,
-    '2':'II Курс | До Сессии '+ str(dd)+' '+days,
+    '1': '2ПКС-115 | Сессия',
+    '2':'II Курс | Сессия',
     '3':'I Курс | '+str(ddfix)+' день учебы',
     }
 
