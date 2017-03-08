@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from pytils import numeral
-import vk,random,time,datetime,os,json,requests,xlrd
+import vk, random, time, datetime, os, json, requests
 session = vk.Session(access_token='token')
 api = vk.API(session)
 admin_id = '257350143'
@@ -11,12 +11,14 @@ conversations= {
     '2':'3',
     '3':'4',
 }
+
 #Настройка аватарок в конфах
 photoconf={
     '11':'./KIP/4.jpg',
     '3':'./KIP/2.jpg',
     '4':'./KIP/1.jpg',
 }
+
 #База ответов
 base={
     '🐱':'Мур :3',
@@ -121,13 +123,9 @@ def get_weather():
 
     return out
 
-#Счетчик дней до конца зимних каникул
-a = '2017-02-09'.split('-')
+#Счетчик дней учебы 
+a = '2016-08-30'.split('-')
 aa = datetime.date(int(a[0]),int(a[1]),int(a[2]))
-
-#Счетчик дней учебы для I курса
-afix = '2016-08-30'.split('-')
-aafix = datetime.date(int(afix[0]),int(afix[1]),int(afix[2]))
 
 while True:
 
@@ -142,20 +140,17 @@ while True:
     bb = datetime.date.today()
 
     #Счетчик дней учебы
-    cc = aa-bb
+    cc = bb-aa
     dd = int(str(cc).split()[0])
-    #
-    ccfix = bb-aafix
-    ddfix = int(str(ccfix).split()[0])
 
     #Работа с падежами числительных
     days =  print_(numeral.choose_plural(int(dd), (u'день', u'дня', u'дней')))
 
     #Названия чатиков
     chat_titles = {
-    '1': '2ПКС-115 | Отдыхаем',
-    '2':'II Курс | Отдыхаем',
-    '3':'I Курс | Отдыхаем',
+    '1': '2ПКС-115 | '+str(dd)+' день учебы',
+    '2':'II Курс | '+str(dd)+' день учебы',
+    '3':'I Курс | '+str(dd)+' день учебы',
     }
 
     #Чекаем названия бесед
@@ -176,7 +171,7 @@ while True:
     ok = api.messages.getLongPollHistory(ts=ts,pts=pts,preview_length=0)
     pts= ok['new_pts']
 
-    #Чекаем входящие сообщения
+    #Чекаем входящие сообщения костыльным методом
     if ok['messages'] != [0]:
         try:
             changed = ok['messages'][1]['body'].partition(' ')[2].partition(' ')[2]
