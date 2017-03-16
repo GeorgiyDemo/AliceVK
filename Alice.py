@@ -12,21 +12,15 @@ conversations= {
     '3':'4',
 }
 
-#Настройка аватарок в конфах
-photoconf={
-    '11':'./KIP/4.jpg',
-    '3':'./KIP/2.jpg',
-    '4':'./KIP/1.jpg',
-}
-
 #База ответов
 base={
     '🐱':'Мур :3',
     'Доброе':'Доброе 🐱',
-    'Жрать хочу':'Диктуй адрес',
+    'Жрать хочу':'Диктуй адрес, закажем пиццу',
     'все уроды':'Согласна',
     'Все уроды':'Согласна!',
     'Доброе утро':'Доброе)',
+    'Опоздаю':'Щито поделать десу',
 }
 
 #Настройка лонгпула
@@ -171,7 +165,7 @@ while True:
     ok = api.messages.getLongPollHistory(ts=ts,pts=pts,preview_length=0)
     pts= ok['new_pts']
 
-    #Чекаем входящие сообщения костыльным методом
+    #Чекаем входящие сообщения
     if ok['messages'] != [0]:
         try:
             changed = ok['messages'][1]['body'].partition(' ')[2].partition(' ')[2]
@@ -192,15 +186,4 @@ while True:
             up = os.popen('uptime').read()
             api.messages.send(chat_id=ok['messages'][1]['chat_id'],message=str(up))
 
-        elif changed == 'обновила фотографию беседы' or changed == 'обновил фотографию беседы' or changed == 'удалил фотографию беседы' or changed == 'удалила фотографию беседы':
-            api.messages.send(chat_id=ok['messages'][1]['chat_id'],message='Ну и зачем?')
-            try:
-                photoresult = api.photos.getChatUploadServer(chat_id=ok['messages'][1]['chat_id'],crop_x=1,crop_y=1078,crop_width=1078)
-                upload_url = photoresult['upload_url']
-                img = {'photo': ('img.jpg', open(r''+photoconf[str(ok['messages'][1]['chat_id'])], 'rb'))}
-                response = requests.post(upload_url, files=img).json()['response']
-                time.sleep(2)
-                api.messages.setChatPhoto(file=response)
-            except:
-                time.sleep(2)
     time.sleep(1)
