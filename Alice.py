@@ -4,6 +4,7 @@ import vk, random, time, datetime, os, json, requests
 session = vk.Session(access_token='token')
 api = vk.API(session)
 admin_id = '257350143'
+bday_string = 'c Днём Рождения!\nУдачи тебе на сессии, котиков и много-много сна!\n🐍'
 
 #Настройка id конф
 conversations= {
@@ -28,6 +29,12 @@ longi = api.messages.getLongPollServer(use_ssl=0,need_pts=1)
 ts = longi['ts']
 pts = longi['pts']
 wtf = longi['key']
+
+
+def get_key(d, value):
+    for k, v in d.items():
+        if v == value:
+            return k
 
 def check_dict(word):
     try:
@@ -117,6 +124,21 @@ def get_weather():
 
     return out
 
+#Функция формирования словаря с днями рождений
+def get_bdate_chat(chat_id):
+	birthday_dictionary={}
+	chat_user_arr=api.messages.getChat(chat_id=conversations[chat_id],fields='bdate')['users']
+	for i in range(len(chat_user_arr)):
+		try:
+			buf = chat_user_arr[i]['bdate'].split('.')
+			new_date = str(buf[0])+'.'+str(buf[1])
+			birthday_dictionary[chat_user_arr[i]['uid']] = new_date
+		except:
+			birthday_dictionary[chat_user_arr[i]['uid']] = 'NaN'
+	return birthday_dictionary
+
+birthday_k2 = get_bdate_chat(str(2))
+
 #Счетчик дней учебы 
 a = '2016-08-30'.split('-')
 aa = datetime.date(int(a[0]),int(a[1]),int(a[2]))
@@ -130,6 +152,8 @@ while True:
     cur_hour = now_time.hour
     cur_minute = now_time.minute
     cur_second = now_time.second
+    cur_month = now_date.month
+    cur_day = now_date.day
     for_logs = str(now_time.hour)+':'+str(now_time.minute)+':'+str(now_time.second)
     bb = datetime.date.today()
 
@@ -146,6 +170,16 @@ while True:
     '2':'II Курс | '+str(dd)+' день учебы',
     '3':'I Курс | '+str(dd)+' день учебы',
     }
+
+    #Чекаем дни рождения
+    if cur_hour == 6 and cur_minute == 58:
+    	dstring = str(cur_day)+'.'+str(cur_month)
+    	bufkey = get_key(birthday_k2,dstring)
+    	if bufkey != None:
+    		bday_user = api.users.get(user_ids=bufkey)[0]
+    		msg = 'Поздравляем '+bday_user['first_name']+' '+bday_user['last_name']+' '+bday_string
+    		api.messages.send(chat_id=conversations['2'],message=msg)
+    	time.sleep(120)
 
     #Чекаем названия бесед
     for i in range(len(conversations)):
@@ -186,4 +220,4 @@ while True:
             up = os.popen('uptime').read()
             api.messages.send(chat_id=ok['messages'][1]['chat_id'],message=str(up))
 
-    time.sleep(1)
+    time.sleep(1.5)
