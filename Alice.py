@@ -140,8 +140,8 @@ def get_bdate_chat(chat_id):
 birthday_k2 = get_bdate_chat(str(2))
 
 #Счетчик дней до летней сессии 
-a = '2017-06-22'.split('-')
-aa = datetime.date(int(a[0]),int(a[1]),int(a[2]))
+#a = '2017-06-22'.split('-')
+#aa = datetime.date(int(a[0]),int(a[1]),int(a[2]))
 
 while True:
 
@@ -158,16 +158,16 @@ while True:
     bb = datetime.date.today()
 
     #Счетчик дней учебы
-    cc = aa-bb
-    dd = int(str(cc).split()[0])
+    #cc = aa-bb
+    #dd = int(str(cc).split()[0])
 
     #Работа с падежами числительных
-    days =  print_(numeral.choose_plural(int(dd), (u'день', u'дня', u'дней')))
+    #days =  print_(numeral.choose_plural(int(dd), (u'день', u'дня', u'дней')))
 
     #Названия чатиков
     chat_titles = {
-    '1': '2ПКС-115 | До Сессии '+ str(dd)+' '+days,
-    '2':'II Курс | До Сессии '+ str(dd)+' '+days,
+    '1': '2ПКС-115 | Сессия',
+    '2':'II Курс | Сессия',
     '3':'I Курс | Сессия',
     }
 
