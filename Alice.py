@@ -5,6 +5,7 @@ session = vk.Session(access_token='token')
 api = vk.API(session)
 admin_id = '257350143'
 bday_string = 'c Днём Рождения!\nУдачи тебе во всем, котиков и много-много сна!\n🐍'
+chat_users_all={}
 
 #Настройка id конф
 conversations= {
@@ -126,19 +127,25 @@ def get_weather():
     return out
 
 #Функция формирования словаря с днями рождений
-def get_bdate_chat(chat_id):
-	birthday_dictionary={}
-	chat_user_arr=api.messages.getChat(chat_id=conversations[chat_id],fields='bdate')['users']
-	for i in range(len(chat_user_arr)):
-		try:
-			buf = chat_user_arr[i]['bdate'].split('.')
-			new_date = str(buf[0])+'.'+str(buf[1])
-			birthday_dictionary[chat_user_arr[i]['uid']] = new_date
-		except:
-			birthday_dictionary[chat_user_arr[i]['uid']] = 'NaN'
-	return birthday_dictionary
+def get_bdate_chat():
 
-birthday_k2 = get_bdate_chat(str(2))
+    birthday_dictionary={}
+
+    for chat_id in range(len(conversations)):
+        chat_user_arr=api.messages.getChat(chat_id=conversations[str(chat_id+1)],fields='bdate')['users']
+        for i in range(len(chat_user_arr)):
+
+            chat_users_all[chat_user_arr[i]['uid']] = conversations[str(chat_id+1)]
+            try:
+                buf = chat_user_arr[i]['bdate'].split('.')
+                new_date = str(buf[0])+'.'+str(buf[1])
+                birthday_dictionary[chat_user_arr[i]['uid']] = new_date
+            except:
+                birthday_dictionary[chat_user_arr[i]['uid']] = 'NaN'
+
+    return birthday_dictionary
+
+birthday_all = get_bdate_chat()
 
 #Счетчик от первого дня лета
 a = '2017-06-01'.split('-')
@@ -175,13 +182,13 @@ while True:
 
     #Чекаем дни рождения
     if cur_hour == 6 and cur_minute == 58:
-    	dstring = str(cur_day)+'.'+str(cur_month)
-    	bufkey = get_key(birthday_k2,dstring)
-    	if bufkey != None:
-    		bday_user = api.users.get(user_ids=bufkey)[0]
-    		msg = 'Поздравляем '+bday_user['first_name']+' '+bday_user['last_name']+' '+bday_string
-    		api.messages.send(chat_id=conversations['2'],message=msg)
-    	time.sleep(120)
+        dstring = str(cur_day)+'.'+str(cur_month)
+        bufkey = get_key(birthday_all,dstring)
+        if bufkey != None:
+            bday_user = api.users.get(user_ids=bufkey,name_case="acc")[0]
+            msg = 'Поздравляем '+bday_user['first_name']+' '+bday_user['last_name']+' '+bday_string
+            api.messages.send(chat_id=chat_users_all[bufkey],message=msg)
+        time.sleep(120)
 
     #Чекаем названия бесед
     for i in range(len(conversations)):
