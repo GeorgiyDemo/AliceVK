@@ -148,7 +148,7 @@ def get_bdate_chat():
 birthday_all = get_bdate_chat()
 
 #Счетчик от первого дня лета
-a = '2017-09-01'.split('-')
+a = '2017-08-31'.split('-')
 aa = datetime.date(int(a[0]),int(a[1]),int(a[2]))
 
 while True:
@@ -165,20 +165,20 @@ while True:
     for_logs = str(now_time.hour)+':'+str(now_time.minute)+':'+str(now_time.second)
     bb = datetime.date.today()
 
-    #Счетчик дней лета
-    cc = aa-bb
+    #Счетчик дней учебы
+    cc = bb-aa
     dd = int(str(cc).split()[0])
 
     #Работа с падежами числительных (пока не нужна)
-    days = print_(numeral.choose_plural(int(dd), (u'день', u'дня', u'дней')))
-    left = print_(numeral.choose_plural(int(dd), (u'Остался', u'Осталось', u'Осталось')))
+    #days = print_(numeral.choose_plural(int(dd), (u'день', u'дня', u'дней')))
+    #left = print_(numeral.choose_plural(int(dd), (u'Остался', u'Осталось', u'Осталось')))
 
     #Названия чатиков
     chat_titles = {
-    '1': '3ПКС-115 | '+left+' '+str(dd)+' '+ days,
-    '2':'III Курс | '+left+' '+str(dd)+' '+ days,
-    '3':'II Курс | '+left+' '+str(dd)+' '+ days,
-    '4':'I Курс | '+left+' '+str(dd)+' '+ days,
+    '1': '3ПКС-115 | '+str(dd)+' день учебы',
+    '2':'III Курс | '+str(dd)+' день учебы',
+    '3':'II Курс | '+str(dd)+' день учебы',
+    '4':'I Курс | '+str(dd)+' день учебы',
     }
 
     #Чекаем дни рождения
