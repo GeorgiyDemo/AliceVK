@@ -13,6 +13,7 @@ conversations= {
     '2':'3',
     '3':'4',
     '4':'13',
+    '5':'15',
 }
 
 #База ответов
@@ -165,7 +166,7 @@ while True:
     for_logs = str(now_time.hour)+':'+str(now_time.minute)+':'+str(now_time.second)
     bb = datetime.date.today()
 
-    #Счетчик дней учебы
+    ##Счетчик дней учебы
     cc = bb-aa
     dd = int(str(cc).split()[0])
 
@@ -179,6 +180,7 @@ while True:
     '2':'III Курс | '+str(dd)+' день учебы',
     '3':'II Курс | '+str(dd)+' день учебы',
     '4':'I Курс | '+str(dd)+' день учебы',
+    '5':'1ПКС-117 | '+str(dd)+' день учебы',
     }
 
     #Чекаем дни рождения
