@@ -52,7 +52,11 @@ def print_(s):
 		out = s
 	else:
 		out = s.encode('UTF-8')
-	return(out)		
+	return(out)	
+
+def send_message(chat, message):
+    message = str(message)
+    api.messages.send(chat_id=chat, message=message)
 
 #Погодка
 def get_weather():
@@ -190,7 +194,7 @@ while True:
         if bufkey != None:
             bday_user = api.users.get(user_ids=bufkey,name_case="acc")[0]
             msg = 'Поздравляем '+bday_user['first_name']+' '+bday_user['last_name']+' '+bday_string
-            api.messages.send(chat_id=chat_users_all[bufkey],message=msg)
+            send_message(chat_users_all[bufkey], msg)
         time.sleep(120)
 
     #Чекаем названия бесед
@@ -219,17 +223,18 @@ while True:
             changed = '0'
         message = str(ok['messages'][1]['body'])
         owner_id = str(ok['messages'][1]['uid'])
+        chat = ok['messages'][1]['chat_id']
 
         if check_dict(message) != 0:
-            api.messages.send(chat_id=ok['messages'][1]['chat_id'],message=base[message])
+            send_message(chat,base[message])
             time.sleep(1)
 
         elif message =='/weather' or message =='/погода':
             mess = get_weather()
-            api.messages.send(chat_id=ok['messages'][1]['chat_id'],message=mess)
+            send_message(chat, mess)
 
         elif message == 'uptime' and owner_id == admin_id:
             up = os.popen('uptime').read()
-            api.messages.send(chat_id=ok['messages'][1]['chat_id'],message=str(up))
+            send_message(chat, str(up))
 
     time.sleep(1.5)
