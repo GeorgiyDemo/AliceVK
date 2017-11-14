@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 from pytils import numeral
-import vk, random, time, datetime, os, json, requests
+import vk, random, time, datetime, json, requests
 session = vk.Session(access_token='token')
 api = vk.API(session)
 admin_id = '257350143'
 bday_string = 'c Днём Рождения!\nУдачи тебе во всем, котиков и много-много сна!\n🐍'
 chat_users_all={}
-
+message_longpoll = [0]
 #Настройка id конф
 conversations= {
     '1':'14',
@@ -19,6 +19,12 @@ conversations= {
 #База ответов
 base={
     '🐱':'Мур :3',
+    '🐍':'🐍🐍🐍',
+    'Кусь':'кусь!!',
+    'кусь':'кусь!!',
+    'КУСЬ':'кусь!!',
+    'Кусь!':'кусь!!1',
+    'кусь!':'кусь!!1',
     'Доброе':'Доброе 🐱',
     'Жрать хочу':'Диктуй адрес, закажем пиццу',
     'все уроды':'Согласна',
@@ -28,10 +34,9 @@ base={
 }
 
 #Настройка лонгпула
-longi = api.messages.getLongPollServer(use_ssl=0,need_pts=1)
-ts = longi['ts']
-pts = longi['pts']
-wtf = longi['key']
+server = None
+key    = None
+ts     = None
 
 
 def get_key(d, value):
@@ -52,11 +57,7 @@ def print_(s):
 		out = s
 	else:
 		out = s.encode('UTF-8')
-	return(out)	
-
-def send_message(chat, message):
-    message = str(message)
-    api.messages.send(chat_id=chat, message=message)
+	return(out)
 
 #Погодка
 def get_weather():
@@ -90,7 +91,7 @@ def get_weather():
         "new-moon": "Новолуние",
         "growing-moon": "Растущая луна",
         "first-quarter": "Первая четверть",
-    
+
         }
 
         try:
@@ -158,83 +159,103 @@ aa = datetime.date(int(a[0]),int(a[1]),int(a[2]))
 
 while True:
 
-    #Работа с временем/датой
-    now_date = datetime.date.today()
-    now_time = datetime.datetime.now()
-    day = now_date.isoweekday()
-    cur_hour = now_time.hour
-    cur_minute = now_time.minute
-    cur_second = now_time.second
-    cur_month = now_date.month
-    cur_day = now_date.day
-    for_logs = str(now_time.hour)+':'+str(now_time.minute)+':'+str(now_time.second)
-    bb = datetime.date.today()
+
+	#Фикс лонпула по харду
+	if server == None:
+		cfg = api.messages.getLongPollServer(v=5.67)
+		server = cfg['server']
+		key = cfg['key']
+		ts = cfg['ts']
+
+	response = requests.post(
+		"https://{server}?act=a_check&key={key}&ts={ts}&wait=25&mode={mode}&version=2".format(**{
+			"server": server,
+            "key": key,
+            "ts": ts,
+            "mode": 2
+        }),
+    timeout=30
+   	).json()
+
+	#Работа с временем/датой
+	now_date = datetime.date.today()
+	now_time = datetime.datetime.now()
+	day = now_date.isoweekday()
+	cur_hour = now_time.hour
+	cur_minute = now_time.minute
+	cur_second = now_time.second
+	cur_month = now_date.month
+	cur_day = now_date.day
+	for_logs = str(now_time.hour)+':'+str(now_time.minute)+':'+str(now_time.second)
+	bb = datetime.date.today()
 
     ##Счетчик дней учебы
-    cc = bb-aa
-    dd = int(str(cc).split()[0])
+	cc = bb-aa
+	dd = int(str(cc).split()[0])
 
     #Работа с падежами числительных (пока не нужна)
     #days = print_(numeral.choose_plural(int(dd), (u'день', u'дня', u'дней')))
     #left = print_(numeral.choose_plural(int(dd), (u'Остался', u'Осталось', u'Осталось')))
 
     #Названия чатиков
-    chat_titles = {
-    '1': '3ПКС-115 | '+str(dd)+' день учебы',
-    '2':'III Курс | '+str(dd)+' день учебы',
-    '3':'II Курс | '+str(dd)+' день учебы',
-    '4':'I Курс | '+str(dd)+' день учебы',
-    '5':'1ПКС-117 | '+str(dd)+' день учебы',
-    }
+	chat_titles = {
+	'1': '3ПКС-115 | '+str(dd)+' день учебы',
+	'2':'III Курс | '+str(dd)+' день учебы',
+	'3':'II Курс | '+str(dd)+' день учебы',
+	'4':'I Курс | '+str(dd)+' день учебы',
+	'5':'1ПКС-117 | '+str(dd)+' день учебы',
+	}
 
     #Чекаем дни рождения
-    if cur_hour == 6 and cur_minute == 58:
-        dstring = str(cur_day)+'.'+str(cur_month)
-        bufkey = get_key(birthday_all,dstring)
-        if bufkey != None:
-            bday_user = api.users.get(user_ids=bufkey,name_case="acc")[0]
-            msg = 'Поздравляем '+bday_user['first_name']+' '+bday_user['last_name']+' '+bday_string
-            send_message(chat_users_all[bufkey], msg)
-        time.sleep(120)
+	if cur_hour == 6 and cur_minute == 58:
+		dstring = str(cur_day)+'.'+str(cur_month)
+		bufkey = get_key(birthday_all,dstring)
+		if bufkey != None:
+			bday_user = api.users.get(user_ids=bufkey,name_case="acc")[0]
+			msg = 'Поздравляем '+bday_user['first_name']+' '+bday_user['last_name']+' '+bday_string
+			api.messages.send(chat_id=chat_users_all[bufkey],message=msg)
+		time.sleep(120)
 
     #Чекаем названия бесед
-    for i in range(len(conversations)):
-        time.sleep(1)
-        conf_id = conversations[str(i+1)]
-        name_now = api.messages.getChat(chat_id=conf_id)
-        check = name_now['title']
+	for i in range(len(conversations)):
+		time.sleep(0.5)
+		conf_id = conversations[str(i+1)]
+		name_now = api.messages.getChat(chat_id=conf_id)
+		check = name_now['title']
 
         #Если надо, то меняем название
-        if check != chat_titles[str(i+1)]:
-            try:
-                api.messages.editChat(chat_id=conf_id,title=chat_titles[str(i+1)])
-                print('['+for_logs+'] Изменили название беседы №'+str(i+1)+' c "'+check+'" на "'+chat_titles[str(i+1)]+'"')
-            except:
-                print('['+for_logs+'] (!) Что-то пошло не так при смене названия беседы №'+str(i+1))
-    
-    ok = api.messages.getLongPollHistory(ts=ts,pts=pts,preview_length=0)
-    pts= ok['new_pts']
+		if check != chat_titles[str(i+1)]:
+			try:
+				api.messages.editChat(chat_id=conf_id,title=chat_titles[str(i+1)])
+				print('['+for_logs+'] Изменили название беседы №'+str(i+1)+' c "'+check+'" на "'+chat_titles[str(i+1)]+'"')
+			except:
+				print('['+for_logs+'] (!) Что-то пошло не так при смене названия беседы №'+str(i+1))
+
+
+	#Ващ это надо конечно переписать
+	checker = False
+	for i in range(len(response['updates'])):
+		if checker != True:
+			try:
+
+				message_longpoll = response['updates'][i][5]
+				chat_longpoll = response['updates'][i][3]-2000000000
+				checker = True
+
+			except:
+				pass
+	if checker == False:
+		message_longpoll = [0]
+		chat_longpoll = [0]
+
+	ts = response['ts']
 
     #Чекаем входящие сообщения
-    if ok['messages'] != [0]:
-        try:
-            changed = ok['messages'][1]['body'].partition(' ')[2].partition(' ')[2]
-        except:
-            changed = '0'
-        message = str(ok['messages'][1]['body'])
-        owner_id = str(ok['messages'][1]['uid'])
-        chat = ok['messages'][1]['chat_id']
+	if message_longpoll != [0]:
 
-        if check_dict(message) != 0:
-            send_message(chat,base[message])
-            time.sleep(1)
+		if check_dict(message_longpoll) != 0:
+			api.messages.send(chat_id=chat_longpoll,message=base[message_longpoll])
 
-        elif message =='/weather' or message =='/погода':
-            mess = get_weather()
-            send_message(chat, mess)
-
-        elif message == 'uptime' and owner_id == admin_id:
-            up = os.popen('uptime').read()
-            send_message(chat, str(up))
-
-    time.sleep(1.5)
+		elif message_longpoll =='/weather' or message_longpoll =='/погода':
+			mess = get_weather()
+			api.messages.send(chat_id=chat_longpoll,message=mess)
