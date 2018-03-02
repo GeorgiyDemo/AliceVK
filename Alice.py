@@ -138,16 +138,17 @@ def get_bdate_chat():
     birthday_dictionary={}
 
     for chat_id in range(len(conversations)):
-        chat_user_arr=api.messages.getChat(chat_id=conversations[str(chat_id+1)],fields='bdate')['users']
+        chat_user_arr=api.messages.getChat(chat_id=conversations[str(chat_id+1)],fields='bdate',v='5.73')['users']
+       
         for i in range(len(chat_user_arr)):
-
-            chat_users_all[chat_user_arr[i]['uid']] = conversations[str(chat_id+1)]
+          
+            chat_users_all[chat_user_arr[i]['id']] = conversations[str(chat_id+1)]
             try:
                 buf = chat_user_arr[i]['bdate'].split('.')
                 new_date = str(buf[0])+'.'+str(buf[1])
-                birthday_dictionary[chat_user_arr[i]['uid']] = new_date
+                birthday_dictionary[chat_user_arr[i]['id']] = new_date
             except:
-                birthday_dictionary[chat_user_arr[i]['uid']] = 'NaN'
+                birthday_dictionary[chat_user_arr[i]['id']] = 'NaN'
 
     return birthday_dictionary
 
@@ -215,7 +216,7 @@ while True:
 	for i in range(len(conversations)):
 		time.sleep(0.5)
 		conf_id = conversations[str(i+1)]
-		name_now = api.messages.getChat(chat_id=conf_id)
+		name_now = api.messages.getChat(chat_id=conf_id,v='5.73')
 		check = name_now['title']
 
         #Если надо, то меняем название
