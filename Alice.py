@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
 from pytils import numeral
 import vk, random, time, datetime, json, requests
+
+#Основная конфигурация
 session = vk.Session(access_token='token')
 api = vk.API(session)
-admin_id = '257350143'
+APIVersion = 5.73
 bday_string = 'c Днём Рождения!\nУдачи тебе во всем, котиков и много-много сна!\n🐍'
 chat_users_all={}
 message_longpoll = [0]
+
 #Настройка id конф
 conversations= {
     '1':'14',
@@ -138,7 +141,7 @@ def get_bdate_chat():
     birthday_dictionary={}
 
     for chat_id in range(len(conversations)):
-        chat_user_arr=api.messages.getChat(chat_id=conversations[str(chat_id+1)],fields='bdate',v='5.73')['users']
+        chat_user_arr=api.messages.getChat(chat_id=conversations[str(chat_id+1)],fields='bdate',v=APIVersion)['users']
        
         for i in range(len(chat_user_arr)):
           
@@ -162,7 +165,7 @@ while True:
 
 	#Фикс лонпула по харду
 	if server == None:
-		cfg = api.messages.getLongPollServer(v=5.67)
+		cfg = api.messages.getLongPollServer(v=APIVersion)
 		server = cfg['server']
 		key = cfg['key']
 		ts = cfg['ts']
@@ -207,29 +210,29 @@ while True:
 		dstring = str(cur_day)+'.'+str(cur_month)
 		bufkey = get_key(birthday_all,dstring)
 		if bufkey != None:
-			bday_user = api.users.get(user_ids=bufkey,name_case="acc")[0]
+			bday_user = api.users.get(user_ids=bufkey,name_case="acc",v=APIVersion)[0]
 			msg = 'Поздравляем '+bday_user['first_name']+' '+bday_user['last_name']+' '+bday_string
-			api.messages.send(chat_id=chat_users_all[bufkey],message=msg)
+			api.messages.send(chat_id=chat_users_all[bufkey],message=msg,v=APIVersion)
 		time.sleep(120)
 
     #Чекаем названия бесед
 	for i in range(len(conversations)):
 		time.sleep(0.5)
 		conf_id = conversations[str(i+1)]
-		name_now = api.messages.getChat(chat_id=conf_id,v='5.73')
+		name_now = api.messages.getChat(chat_id=conf_id,v=APIVersion)
 		check = name_now['title']
 
         #Если надо, то меняем название
 		if check != chat_titles[str(i+1)]:
 			try:
-				api.messages.editChat(chat_id=conf_id,title=chat_titles[str(i+1)])
+				api.messages.editChat(chat_id=conf_id,title=chat_titles[str(i+1)],v=APIVersion)
 				print('['+for_logs+'] Изменили название беседы №'+str(i+1)+' c "'+check+'" на "'+chat_titles[str(i+1)]+'"')
 			except:
 				print('['+for_logs+'] (!) Что-то пошло не так при смене названия беседы №'+str(i+1))
 
 
-	#Ващ это надо конечно переписать
 	checker = False
+    
 	for i in range(len(response['updates'])):
 		if checker != True:
 			try:
@@ -250,8 +253,8 @@ while True:
 	if message_longpoll != [0]:
 
 		if check_dict(message_longpoll) != 0:
-			api.messages.send(chat_id=chat_longpoll,message=base[message_longpoll])
+			api.messages.send(chat_id=chat_longpoll,message=base[message_longpoll],v=APIVersion)
 
 		elif message_longpoll =='/weather' or message_longpoll =='/погода':
 			mess = get_weather()
-			api.messages.send(chat_id=chat_longpoll,message=mess)
+			api.messages.send(chat_id=chat_longpoll,message=mess,v=APIVersion)
