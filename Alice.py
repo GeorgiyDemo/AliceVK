@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from pytils import numeral
-import vk, random, time, datetime, json, requests
+import vk, random, time, datetime, json, requests, urllib3
+import dateutil.parser
 
 #Основная конфигурация
 session = vk.Session(access_token='token')
@@ -40,7 +41,6 @@ base={
 server = None
 key    = None
 ts     = None
-
 
 def get_key(d, value):
     for k, v in d.items():
@@ -135,6 +135,31 @@ def get_weather():
 
     return out
 
+#Функция для получения ближайшей электрички между двумя станциями
+def TrainsForVitya(station_from, station_to):
+    urllib3.disable_warnings()
+    headers = {
+
+    #Хедеры для Я.Электричек
+    'Host': 'export.rasp.yandex.net',
+    'Accept-Language': 'ru',
+    'User-Agent': '%D0%AF%D0%BD%D0%B4%D0%B5%D0%BA%D1%81%20%D0%AD%D0%BB%D0%B5%D0%BA%D1%82%D1%80%D0%B8%D1%87%D0%BA%D0%B8/3233 CFNetwork/758.0.2 Darwin/15.0.0',
+    'Accept': '*/*'
+    }
+
+    my_json = requests.get('https://export.rasp.yandex.net/v3/suburban/search_on_date?date='+str(datetime.date.today())+'&days_ahead=1&lang=ru_RU&station_from='+str(station_from)+'&station_to='+str(station_to)+'&tomorrow_upto=3&transfers=auto',headers=headers, verify=False).json();
+    segments = my_json["days"][0]["segments"]
+
+    for i in range(len(segments)):
+
+        segment_now = segments[i]
+        dateformat = dateutil.parser.parse(segment_now["departure"]["time"], dayfirst=True)
+        time_buf = dateformat.replace(tzinfo=None)-datetime.datetime.now().replace(tzinfo=None)
+        datetime.timedelta(0, 8, 562000)
+        minuts_count = (divmod(time_buf.days * 86400 + time_buf.seconds, 60))[0]
+        if minuts_count > 0:
+            return "Электричка " + segment_now["thread"]["title"] + " через "  +  str(minuts_count) + " мин, "+ str(segment_now["tariff"]["value"])+ " руб"
+
 #Функция формирования словаря с днями рождений
 def get_bdate_chat():
 
@@ -142,9 +167,9 @@ def get_bdate_chat():
 
     for chat_id in range(len(conversations)):
         chat_user_arr=api.messages.getChat(chat_id=conversations[str(chat_id+1)],fields='bdate',v=APIVersion)['users']
-       
+
         for i in range(len(chat_user_arr)):
-          
+
             chat_users_all[chat_user_arr[i]['id']] = conversations[str(chat_id+1)]
             try:
                 buf = chat_user_arr[i]['bdate'].split('.')
@@ -154,6 +179,11 @@ def get_bdate_chat():
                 birthday_dictionary[chat_user_arr[i]['id']] = 'NaN'
 
     return birthday_dictionary
+
+################################################################
+def remove_weather_message(message_id):
+    api.messages.delete()
+###############################################################
 
 birthday_all = get_bdate_chat()
 
@@ -232,7 +262,7 @@ while True:
 
 
 	checker = False
-    
+
 	for i in range(len(response['updates'])):
 		if checker != True:
 			try:
@@ -257,4 +287,11 @@ while True:
 
 		elif message_longpoll =='/weather' or message_longpoll =='/погода':
 			mess = get_weather()
+			api.messages.send(chat_id=chat_longpoll,message=mess,v=APIVersion)
+
+		elif message_longpoll =='/электрички' or message_longpoll =='/train':
+			if cur_hour < 13:
+				mess = TrainsForVitya(237007,195506)
+			else:
+				mess = TrainsForVitya(195506,237007)
 			api.messages.send(chat_id=chat_longpoll,message=mess,v=APIVersion)
