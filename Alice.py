@@ -181,15 +181,23 @@ def get_bdate_chat():
     return birthday_dictionary
 
 ################################################################
+#Как я выяснил, я хотел удалять сообщение с погодой спустя какое-то время, но руки не дошли
 def remove_weather_message(message_id):
     api.messages.delete()
 ###############################################################
 
 birthday_all = get_bdate_chat()
 
-#Счетчик дней учебы
-a = '2017-08-30'.split('-')
-aa = datetime.date(int(a[0]),int(a[1]),int(a[2]))
+#Счетчик до начала летней сессии
+#Первый курс
+a1 = '2018-06-15'.split('-')
+aa1 = datetime.date(int(a1[0]),int(a1[1]),int(a1[2]))
+#Второй курс
+a2 = '2018-06-22'.split('-')
+aa2 = datetime.date(int(a2[0]),int(a2[1]),int(a2[2]))
+#Третий курс
+a3 = '2018-06-22'.split('-')
+aa3 = datetime.date(int(a2[0]),int(a2[1]),int(a2[2]))
 
 while True:
 
@@ -222,20 +230,29 @@ while True:
 	for_logs = str(now_time.hour)+':'+str(now_time.minute)+':'+str(now_time.second)
 	bb = datetime.date.today()
 
-	#Счетчик
-	cc = bb-aa
-	dd = int(str(cc).split()[0])
+	#Счетчик дней до летней сессии
+	cc1 = aa1-bb
+	cc2 = aa2-bb
+	cc3 = aa3-bb
+
+	dd1 = int(str(cc1).split()[0])
+	dd2 = int(str(cc2).split()[0])
+	dd3 = int(str(cc3).split()[0])
+
+	days1 =  print_(numeral.choose_plural(int(dd1), (u'день', u'дня', u'дней')))
+	days2 =  print_(numeral.choose_plural(int(dd2), (u'день', u'дня', u'дней')))
+	days3 =  print_(numeral.choose_plural(int(dd3), (u'день', u'дня', u'дней')))
 
 	#Названия чатиков
 	chat_titles = {
-	'1': '3ПКС-115 | '+str(dd)+' день учебы',
-	'2':'III Курс | '+str(dd)+' день учебы',
-	'3':'II Курс | '+str(dd)+' день учебы',
-	'4':'I Курс | '+str(dd)+' день учебы',
-	'5':'1ПКС-117 | '+str(dd)+' день учебы',
+	'1': '3ПКС-115 | До Сессии '+ str(dd3)+' '+days3,
+	'2':'III Курс | До Сессии '+ str(dd3)+' '+days3,
+	'3':'II Курс | До Сессии '+ str(dd2)+' '+days2,
+	'4':'I Курс | До Сессии '+ str(dd1)+' '+days1,
+	'5':'1ПКС-117 | До Сессии '+ str(dd1)+' '+days1
 	}
 
-    #Чекаем дни рождения
+	#Чекаем дни рождения
 	if cur_hour == 6 and cur_minute == 58:
 		dstring = str(cur_day)+'.'+str(cur_month)
 		bufkey = get_key(birthday_all,dstring)
