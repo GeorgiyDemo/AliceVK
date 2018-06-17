@@ -180,12 +180,6 @@ def get_bdate_chat():
 
     return birthday_dictionary
 
-################################################################
-#Как я выяснил, я хотел удалять сообщение с погодой спустя какое-то время, но руки не дошли
-def remove_weather_message(message_id):
-    api.messages.delete()
-###############################################################
-
 birthday_all = get_bdate_chat()
 
 #Счетчик до начала летней сессии
@@ -252,7 +246,7 @@ while True:
 		bufkey = get_key(birthday_all,dstring)
 		if bufkey != None:
 			bday_user = api.users.get(user_ids=bufkey,name_case="acc",v=APIVersion)[0]
-			msg = 'Поздравляем '+bday_user['first_name']+' '+bday_user['last_name']+' '+bday_string
+			msg = 'Поздравляем *id'+str(bufkey) + "(" + bday_user['first_name']+' '+bday_user['last_name']+') '+bday_string
 			api.messages.send(chat_id=chat_users_all[bufkey],message=msg,v=APIVersion)
 		time.sleep(120)
 
@@ -298,11 +292,4 @@ while True:
 
 		elif message_longpoll =='/weather' or message_longpoll =='/погода':
 			mess = get_weather()
-			api.messages.send(chat_id=chat_longpoll,message=mess,v=APIVersion)
-
-		elif message_longpoll =='/электрички' or message_longpoll =='/train':
-			if cur_hour < 13:
-				mess = TrainsForVitya(237007,195506)
-			else:
-				mess = TrainsForVitya(195506,237007)
 			api.messages.send(chat_id=chat_longpoll,message=mess,v=APIVersion)
