@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from pytils import numeral
-import vk, random, time, datetime, json, requests, urllib3
-import dateutil.parser
+import vk, time, datetime, json, requests, urllib3, dateutil.parser
 
 #Основная конфигурация
 session = vk.Session(access_token='token')
