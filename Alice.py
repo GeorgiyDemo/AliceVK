@@ -17,6 +17,7 @@ conversations= {
     '3':'4',
     '4':'13',
     '5':'15',
+    '6':'17',
 }
 
 #База ответов
@@ -181,13 +182,10 @@ def get_bdate_chat():
 
 birthday_all = get_bdate_chat()
 
-#Счетчик до начала летней сессии
-#Второй курс
-a2 = '2018-06-22'.split('-')
-aa2 = datetime.date(int(a2[0]),int(a2[1]),int(a2[2]))
-#Третий курс
-a3 = '2018-06-22'.split('-')
-aa3 = datetime.date(int(a2[0]),int(a2[1]),int(a2[2]))
+#Счетчик от первого дня лета
+a = '2018-06-01'.split('-')
+aa = datetime.date(int(a[0]),int(a[1]),int(a[2]))
+
 
 while True:
 
@@ -220,23 +218,21 @@ while True:
 	for_logs = str(now_time.hour)+':'+str(now_time.minute)+':'+str(now_time.second)
 	bb = datetime.date.today()
 
-	#Счетчик дней до летней сессии
-	cc2 = aa2-bb
-	cc3 = aa3-bb
+	#Счетчик дней лета
+	cc = bb-aa
+	dd = int(str(cc).split()[0])
 
-	dd2 = int(str(cc2).split()[0])
-	dd3 = int(str(cc3).split()[0])
-
-	days2 =  print_(numeral.choose_plural(int(dd2), (u'день', u'дня', u'дней')))
-	days3 =  print_(numeral.choose_plural(int(dd3), (u'день', u'дня', u'дней')))
+    #Работа с падежами числительных (пока не нужна)
+	#days =  print_(numeral.choose_plural(int(dd), (u'день', u'дня', u'дней')))
 
 	#Названия чатиков
 	chat_titles = {
-	'1': '3ПКС-115 | Сессия',
-	'2':'III Курс | Сессия',
-	'3':'II Курс | Сессия',
-	'4':'I Курс | Сессия',
-	'5':'1ПКС-117 | Сессия',
+	'1': '4ПКС-115 | '+str(dd)+' день лета',
+	'2':'IV Курс | '+str(dd)+' день лета',
+	'3':'III Курс | '+str(dd)+' день лета',
+	'4':'II Курс | '+str(dd)+' день лета',
+	'5':'2ПКС-117 | '+str(dd)+' день лета',
+    '6':'I Курс | '+str(dd)+' день лета',
 	}
 
 	#Чекаем дни рождения
