@@ -220,7 +220,7 @@ while True:
 
 	#Счетчик дней лета
 	cc = bb-aa
-	dd = int(str(cc).split()[0])
+	dd = int(str(cc).split()[0])+1
 
     #Работа с падежами числительных (пока не нужна)
 	#days =  print_(numeral.choose_plural(int(dd), (u'день', u'дня', u'дней')))
