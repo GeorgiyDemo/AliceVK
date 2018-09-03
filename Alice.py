@@ -1,9 +1,13 @@
 # -*- coding: utf-8 -*-
 from pytils import numeral
 import vk, time, datetime, json, requests, urllib3, dateutil.parser
+from captcha_solver import CaptchaSolver
+
+access_token = "vk_token"
+antigate_token = "antigate_token"
 
 #Основная конфигурация
-session = vk.Session(access_token='token')
+session = vk.Session(access_token=access_token)
 api = vk.API(session)
 APIVersion = 5.73
 bday_string = 'c Днём Рождения!\nУдачи тебе во всем, котиков и много-много сна!\n🐍'
@@ -41,6 +45,11 @@ base={
 server = None
 key    = None
 ts     = None
+
+def requests_image(file_url):
+	img_data = requests.get(file_url,verify=False).content
+	with open('captcha.jpg', 'wb') as handler:
+		handler.write(img_data)
 
 def get_key(d, value):
     for k, v in d.items():
@@ -219,19 +228,19 @@ while True:
 	bb = datetime.date.today()
 
 	#Счетчик дней лета
-	cc = aa-bb
-	dd = int(str(cc).split()[0])+1#Работа с падежами числительных (пока не нужна)
-	days = print_(numeral.choose_plural(int(dd), (u'день', u'дня', u'дней')))
-	left = print_(numeral.choose_plural(int(dd), (u'Остался', u'Осталось', u'Осталось')))
+	cc = bb-aa
+	dd = int(str(cc).split()[0])+1
+	#days = print_(numeral.choose_plural(int(dd), (u'день', u'дня', u'дней')))
+	#left = print_(numeral.choose_plural(int(dd), (u'Остался', u'Осталось', u'Осталось')))
 
 	#Названия чатиков
 	chat_titles = {
-	'1': '4ПКС-115 | '+left+' '+str(dd)+' '+ days,
-	'2':'IV Курс | '+left+' '+str(dd)+' '+ days,
-	'3':'III Курс | '+left+' '+str(dd)+' '+ days,
-	'4':'II Курс | '+left+' '+str(dd)+' '+ days,
-	'5':'2ПКС-117 | '+left+' '+str(dd)+' '+ days,
-    '6':'I Курс | '+left+' '+str(dd)+' '+ days
+	'1': '4ПКС-115 | '+str(dd)+' день учебы',
+	'2':'IV Курс | '+str(dd)+' день учебы',
+	'3':'III Курс | '+str(dd)+' день учебы',
+	'4':'II Курс | '+str(dd)+' день учебы',
+	'5':'2ПКС-117 | '+str(dd)+' день учебы',
+    '6':'I Курс | '+str(dd)+' день учебы'
 	}
 
 	#Чекаем дни рождения
@@ -255,11 +264,22 @@ while True:
 		if check != chat_titles[str(i+1)]:
 			try:
 				api.messages.editChat(chat_id=conf_id,title=chat_titles[str(i+1)],v=APIVersion)
-				print('['+for_logs+'] Изменили название беседы №'+str(i+1)+' c "'+check+'" на "'+chat_titles[str(i+1)]+'"')
-			except:
-				print('['+for_logs+'] (!) Что-то пошло не так при смене названия беседы №'+str(i+1))
+			except Exception as e:
 
-
+				captcha_sid=vk.exceptions.VkAPIError.captcha_sid.__get__(e)
+				print(captcha_sid)
+				captcha_url = vk.exceptions.VkAPIError.captcha_img.__get__(e)
+				print(captcha_url)
+				if (captcha_sid == None) and (captcha_url == None):
+					time.sleep(3)
+					api.messages.editChat(chat_id=conf_id,title=chat_titles[str(i+1)],v=APIVersion)
+				requests_image(captcha_url)
+				solver = CaptchaSolver('antigate', api_key=antigate_token)
+				raw_data = open('captcha.jpg', 'rb').read()
+				captcha_ready = solver.solve_captcha(raw_data)
+				print(captcha_ready)
+				print("Пробуем..")
+				print(api.messages.editChat(chat_id=conf_id,title=chat_titles[str(i+1)],v=APIVersion,captcha_sid=captcha_sid,captcha_key=captcha_ready))
 	checker = False
 
 	for i in range(len(response['updates'])):
