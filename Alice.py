@@ -267,9 +267,7 @@ while True:
 			except Exception as e:
 
 				captcha_sid=vk.exceptions.VkAPIError.captcha_sid.__get__(e)
-				print(captcha_sid)
 				captcha_url = vk.exceptions.VkAPIError.captcha_img.__get__(e)
-				print(captcha_url)
 				if (captcha_sid == None) and (captcha_url == None):
 					time.sleep(3)
 					api.messages.editChat(chat_id=conf_id,title=chat_titles[str(i+1)],v=APIVersion)
@@ -277,9 +275,7 @@ while True:
 				solver = CaptchaSolver('antigate', api_key=antigate_token)
 				raw_data = open('captcha.jpg', 'rb').read()
 				captcha_ready = solver.solve_captcha(raw_data)
-				print(captcha_ready)
-				print("Пробуем..")
-				print(api.messages.editChat(chat_id=conf_id,title=chat_titles[str(i+1)],v=APIVersion,captcha_sid=captcha_sid,captcha_key=captcha_ready))
+				api.messages.editChat(chat_id=conf_id,title=chat_titles[str(i+1)],v=APIVersion,captcha_sid=captcha_sid,captcha_key=captcha_ready)
 	checker = False
 
 	for i in range(len(response['updates'])):
