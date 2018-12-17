@@ -145,31 +145,6 @@ def get_weather():
 
     return out
 
-#Функция для получения ближайшей электрички между двумя станциями
-def TrainsForVitya(station_from, station_to):
-    urllib3.disable_warnings()
-    headers = {
-
-    #Хедеры для Я.Электричек
-    'Host': 'export.rasp.yandex.net',
-    'Accept-Language': 'ru',
-    'User-Agent': '%D0%AF%D0%BD%D0%B4%D0%B5%D0%BA%D1%81%20%D0%AD%D0%BB%D0%B5%D0%BA%D1%82%D1%80%D0%B8%D1%87%D0%BA%D0%B8/3233 CFNetwork/758.0.2 Darwin/15.0.0',
-    'Accept': '*/*'
-    }
-
-    my_json = requests.get('https://export.rasp.yandex.net/v3/suburban/search_on_date?date='+str(datetime.date.today())+'&days_ahead=1&lang=ru_RU&station_from='+str(station_from)+'&station_to='+str(station_to)+'&tomorrow_upto=3&transfers=auto',headers=headers, verify=False).json();
-    segments = my_json["days"][0]["segments"]
-
-    for i in range(len(segments)):
-
-        segment_now = segments[i]
-        dateformat = dateutil.parser.parse(segment_now["departure"]["time"], dayfirst=True)
-        time_buf = dateformat.replace(tzinfo=None)-datetime.datetime.now().replace(tzinfo=None)
-        datetime.timedelta(0, 8, 562000)
-        minuts_count = (divmod(time_buf.days * 86400 + time_buf.seconds, 60))[0]
-        if minuts_count > 0:
-            return "Электричка " + segment_now["thread"]["title"] + " через "  +  str(minuts_count) + " мин, "+ str(segment_now["tariff"]["value"])+ " руб"
-
 #Функция формирования словаря с днями рождений
 def get_bdate_chat():
 
@@ -192,8 +167,8 @@ def get_bdate_chat():
 
 birthday_all = get_bdate_chat()
 
-#Счетчик от первого дня лета
-a = '2018-09-01'.split('-')
+#Счетчик до начала Нового Года 2019
+a = '2019-01-01'.split('-')
 aa = datetime.date(int(a[0]),int(a[1]),int(a[2]))
 
 
@@ -229,20 +204,20 @@ while True:
 	bb = datetime.date.today()
 
 	#Счетчик дней лета
-	cc = bb-aa
+	cc = aa-bb
 	dd = int(str(cc).split()[0])+1
-	#days = print_(numeral.choose_plural(int(dd), (u'день', u'дня', u'дней')))
-	#left = print_(numeral.choose_plural(int(dd), (u'Остался', u'Осталось', u'Осталось')))
+	days = print_(numeral.choose_plural(int(dd), (u'день', u'дня', u'дней')))
+	left = print_(numeral.choose_plural(int(dd), (u'Остался', u'Осталось', u'Осталось')))
 
 	#Названия чатиков
 	chat_titles = {
-	'1':'4ПКС-115 | '+str(dd)+' день учебы',
-	'2':'IV Курс | '+str(dd)+' день учебы',
-	'3':'III Курс | '+str(dd)+' день учебы',
-	'4':'II Курс | '+str(dd)+' день учебы',
-	'5':'2ПКС-117 | '+str(dd)+' день учебы',
-    '6':'I Курс | '+str(dd)+' день учебы',
-    '7':'3ПКС-116 | '+str(dd)+' день учебы',
+	'1':'4ПКС-115 | До НГ '+ str(dd)+' '+days,
+	'2':'IV Курс | До НГ '+ str(dd)+' '+days,
+	'3':'III Курс | До НГ '+ str(dd)+' '+days,
+	'4':'II Курс | До НГ '+ str(dd)+' '+days,
+	'5':'2ПКС-117 | До НГ '+ str(dd)+' '+days,
+    '6':'I Курс | До НГ '+ str(dd)+' '+days,
+    '7':'3ПКС-116 | До НГ '+ str(dd)+' '+days,
 	}
 
 	#Чекаем дни рождения
