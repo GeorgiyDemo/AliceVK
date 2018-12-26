@@ -168,7 +168,7 @@ def get_bdate_chat():
 birthday_all = get_bdate_chat()
 
 #Счетчик до начала Нового Года 2019
-a = '2019-01-01'.split('-')
+a = '2018-12-31'.split('-')
 aa = datetime.date(int(a[0]),int(a[1]),int(a[2]))
 
 
