@@ -168,9 +168,8 @@ def get_bdate_chat():
 birthday_all = get_bdate_chat()
 
 #Счетчик до начала Нового Года 2019
-a = '2018-12-31'.split('-')
+a = '2018-09-01'.split('-')
 aa = datetime.date(int(a[0]),int(a[1]),int(a[2]))
-
 
 while True:
 
@@ -203,22 +202,22 @@ while True:
 	for_logs = str(now_time.hour)+':'+str(now_time.minute)+':'+str(now_time.second)
 	bb = datetime.date.today()
 
-    #Счетчик дней лета
-    #cc = aa-bb
-    #dd = int(str(cc).split()[0])+1
-    #days = print_(numeral.choose_plural(int(dd), (u'день', u'дня', u'дней')))
-    #left = print_(numeral.choose_plural(int(dd), (u'Остался', u'Осталось', u'Осталось')))
+	#Счетчик дней лета
+	cc = bb-aa
+	dd = int(str(cc).split()[0])+1
+	#days = print_(numeral.choose_plural(int(dd), (u'день', u'дня', u'дней')))
+	#left = print_(numeral.choose_plural(int(dd), (u'Остался', u'Осталось', u'Осталось')))
 
-    #Названия чатиков
-    chat_titles = {
-    '1':'4ПКС-115 | Отдыхаем',
-    '2':'IV Курс | Отдыхаем',
-    '3':'III Курс | Отдыхаем',
-    '4':'II Курс | Отдыхаем',
-    '5':'2ПКС-117 | Отдыхаем',
-    '6':'I Курс | Отдыхаем',
-    '7':'3ПКС-116 | Отдыхаем',
-    }
+	#Названия чатиков
+	chat_titles = {
+	'1':'4ПКС-115 | '+str(dd)+' день учебы',
+	'2':'IV Курс | '+str(dd)+' день учебы',
+	'3':'III Курс | '+str(dd)+' день учебы',
+	'4':'II Курс | '+str(dd)+' день учебы',
+	'5':'2ПКС-117 | '+str(dd)+' день учебы',
+    '6':'I Курс | '+str(dd)+' день учебы',
+    '7':'3ПКС-116 '+str(dd)+' день учебы',
+	}
 
 	#Чекаем дни рождения
 	if cur_hour == 6 and cur_minute == 58:
