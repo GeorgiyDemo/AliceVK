@@ -1,13 +1,16 @@
 # -*- coding: utf-8 -*-
 from pytils import numeral
 import vk, time, datetime, json, requests, urllib3, dateutil.parser
+import GetTokensModule
+import PhotoModule
 from captcha_solver import CaptchaSolver
 
-access_token = "vk_token"
-antigate_token = "antigate_token"
+tdictionary = GetTokensModule.GetTokens()
+vk_token = tdictionary["vk_token"]
+antigate_token = tdictionary["antigate_token"]
 
 #Основная конфигурация
-session = vk.Session(access_token=access_token)
+session = vk.Session(access_token=vk_token)
 api = vk.API(session)
 APIVersion = 5.73
 bday_string = 'c Днём Рождения!\nУдачи тебе во всем, котиков и много-много сна!\n🐍'
@@ -115,11 +118,11 @@ def get_weather():
 
     headers = {
     #Хедеры с Я.Погодки
-    'X-Yandex-Weather-Device-ID': 'Device-ID',
-    'X-Yandex-Weather-Token': 'Token',
-    'X-Yandex-Weather-Device': 'os=iPhone OS; os_version=9.0.2; manufacturer=Apple; model=iPad; device_id=Device-ID; uuid=uuid"',
+    'X-Yandex-Weather-Device-ID': 'AC02882D-1415-4B2C-91C9-9B2AF5579618',
+    'X-Yandex-Weather-Token': '3916fd13d6ab74022f7b472e2c51b396',
+    'X-Yandex-Weather-Device': 'os=iPhone OS; os_version=9.0.2; manufacturer=Apple; model=iPad; device_id=AC02882D-1415-4B2C-91C9-9B2AF5579618; uuid=8e58e9f0c6b30f82243f47856e23d98f"',
     'X-Yandex-Weather-Client': 'YandexWeatherIOS/2051',
-    'X-Yandex-Weather-UUID': 'UUID',
+    'X-Yandex-Weather-UUID': '8e58e9f0c6b30f82243f47856e23d98f',
     'X-Yandex-Weather-Timestamp': '1471287200'
     }
 
@@ -257,14 +260,21 @@ while True:
 	for i in range(len(response['updates'])):
 		if checker != True:
 			try:
-
+				print(response['updates'])
 				message_longpoll = response['updates'][i][5]
 				chat_longpoll = response['updates'][i][3]-2000000000
 				checker = True
 
 			except:
 				pass
+			#Фоточку ищем
+			try:
+				attaches = response['updates'][0][6]
+			except:
+				print("А ФОТКИ ТО НЕТ")
+				pass
 	if checker == False:
+        attaches = [0]
 		message_longpoll = [0]
 		chat_longpoll = [0]
 
@@ -279,3 +289,22 @@ while True:
 		elif message_longpoll =='/weather' or message_longpoll =='/погода':
 			mess = get_weather()
 			api.messages.send(chat_id=chat_longpoll,message=mess,v=APIVersion)
+        
+        elif "attach1_type" in attaches:
+            if attaches["attach1_type"] == "photo":
+				photo_json = api.messages.getById(message_ids=response['updates'][0][1],v=APIVersion)["items"][0]["attachments"][0]["photo"]
+								
+				#Простите
+				keyname = ""
+				for key in photo_json:
+					if key[:5] == "photo":
+						keyname = key
+						server_url = api.photos.getMessagesUploadServer(peer_id=chat_longpoll,v=APIVersion)["upload_url"]
+						thisfilename = PhotoModule.getfile(photo_json[keyname])
+						photo_response = requests.post(server_url,files={'photo': open(thisfilename, 'rb')}).json()
+						photo_final = api.photos.saveMessagesPhoto(photo=photo_response["photo"],server=photo_response["server"],hash=photo_response["hash"],v=APIVersion)[0]
+						photo_str = "photo"+str(photo_final["owner_id"])+"_"+str(photo_final["id"])
+						
+						else:
+							api.messages.send(user_id=chat_longpoll,message="ОУ ДЕРЖИ",attachment=photo_str,keyboard=json.dumps(request_keyboard,ensure_ascii=False),v=APIVersion)
+							main_obj[chat_longpoll]=[thisfilename, message_final]
