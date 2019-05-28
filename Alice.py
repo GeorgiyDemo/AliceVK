@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 from pytils import numeral
 import vk, time, datetime, json, requests, urllib3, dateutil.parser
-import GetTokensModule
+import GetSettingsModule
 import PhotoModule
 from captcha_solver import CaptchaSolver
 
-tdictionary = GetTokensModule.GetTokens()
-vk_token = tdictionary["vk_token"]
-antigate_token = tdictionary["antigate_token"]
+sdictionary = GetSettingsModule.GetSettings()
+vk_token = sdictionary["vk_token"]
+antigate_token = sdictionary["antigate_token"]
 
 #Основная конфигурация
 session = vk.Session(access_token=vk_token)
@@ -274,7 +274,7 @@ while True:
 				print("А ФОТКИ ТО НЕТ")
 				pass
 	if checker == False:
-        attaches = [0]
+		attaches = [0]
 		message_longpoll = [0]
 		chat_longpoll = [0]
 
@@ -286,25 +286,25 @@ while True:
 		if check_dict(message_longpoll) != 0:
 			api.messages.send(chat_id=chat_longpoll,message=base[message_longpoll],v=APIVersion)
 
-		elif message_longpoll =='/weather' or message_longpoll =='/погода':
+		elif message_longpoll =="/weather" or message_longpoll =="/погода":
 			mess = get_weather()
 			api.messages.send(chat_id=chat_longpoll,message=mess,v=APIVersion)
         
-        elif "attach1_type" in attaches:
-            if attaches["attach1_type"] == "photo":
+		elif message_longpoll == "/фото" and "attach1_type" in attaches:
+			if attaches["attach1_type"] == "photo":
 				photo_json = api.messages.getById(message_ids=response['updates'][0][1],v=APIVersion)["items"][0]["attachments"][0]["photo"]
 								
 				#Простите
 				keyname = ""
 				for key in photo_json:
+					print(photo_json)
 					if key[:5] == "photo":
 						keyname = key
-						server_url = api.photos.getMessagesUploadServer(peer_id=chat_longpoll,v=APIVersion)["upload_url"]
-						thisfilename = PhotoModule.getfile(photo_json[keyname])
-						photo_response = requests.post(server_url,files={'photo': open(thisfilename, 'rb')}).json()
-						photo_final = api.photos.saveMessagesPhoto(photo=photo_response["photo"],server=photo_response["server"],hash=photo_response["hash"],v=APIVersion)[0]
-						photo_str = "photo"+str(photo_final["owner_id"])+"_"+str(photo_final["id"])
-						
-						else:
-							api.messages.send(user_id=chat_longpoll,message="ОУ ДЕРЖИ",attachment=photo_str,keyboard=json.dumps(request_keyboard,ensure_ascii=False),v=APIVersion)
-							main_obj[chat_longpoll]=[thisfilename, message_final]
+
+				server_url = api.photos.getMessagesUploadServer(peer_id=chat_longpoll,v=APIVersion)["upload_url"]
+				thisfilename = PhotoModule.getfile(photo_json[keyname])
+				PhotoModule.DrawText(thisfilename,sdictionary["ttf_path"])
+				photo_response = requests.post(server_url,files={'photo': open(thisfilename, 'rb')}).json()
+				photo_final = api.photos.saveMessagesPhoto(photo=photo_response["photo"],server=photo_response["server"],hash=photo_response["hash"],v=APIVersion)[0]
+				photo_str = "photo"+str(photo_final["owner_id"])+"_"+str(photo_final["id"])
+				api.messages.send(chat_id=chat_longpoll,message="МЯУ",attachment=photo_str,v=APIVersion)
