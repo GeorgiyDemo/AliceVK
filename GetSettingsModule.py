@@ -1,5 +1,6 @@
 import yaml
 
+
 def GetSettings():
     """
         Процедура для чтения настроек с файла yaml
@@ -13,5 +14,3 @@ def GetSettings():
     with open("./tokens.yaml", 'r') as stream:
         tokens_dictionary = yaml.load(stream)
         return tokens_dictionary
-
-

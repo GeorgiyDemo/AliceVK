@@ -2,3 +2,4 @@
 tokens.yaml
 *.pyc
 *.jpg
+*.idea
