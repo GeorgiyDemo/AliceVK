@@ -31,6 +31,7 @@ conversations = {
     '4': '17',
     '5': '26',
     '6': '52',
+    '7': '53',
 }
 
 # База ответов
@@ -186,6 +187,12 @@ birthday_all = get_bdate_chat()
 a = '2019-06-01'.split('-')
 aa = datetime.date(int(a[0]), int(a[1]), int(a[2]))
 
+#Счётчик до приказа в финашку
+
+fa_aa = '2019-08-03'.split('-')
+fa_counter = datetime.date(int(fa_aa[0]), int(fa_aa[1]), int(fa_aa[2]))
+
+
 while True:
 
     # Фикс лонпула по харду
@@ -220,7 +227,10 @@ while True:
     # Счетчик дней лета
     cc = bb - aa
     dd = int(str(cc).split()[0]) + 1
-    # days = print_(numeral.choose_plural(int(dd), (u'день', u'дня', u'дней')))
+
+    fa_cc = fa_counter - bb
+    fa_dd = int(str(fa_cc).split()[0]) + 1
+    fa_days = print_(numeral.choose_plural(int(fa_dd), (u'день', u'дня', u'дней')))
     # left = print_(numeral.choose_plural(int(dd), (u'Остался', u'Осталось', u'Осталось')))
 
     # Названия чатиков
@@ -231,6 +241,7 @@ while True:
         '4': 'II Курс | ' + str(dd) + ' день лета',
         '5': '4ПКС-116 | ' + str(dd) + ' день лета',
         '6': 'I Курс | ' + str(dd) + ' день лета',
+        '7': 'FA | До приказа ' + str(fa_dd) + ' '+fa_days,
     }
 
     # Чекаем дни рождения
