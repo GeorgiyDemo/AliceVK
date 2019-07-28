@@ -190,7 +190,7 @@ aa = datetime.date(int(a[0]), int(a[1]), int(a[2]))
 
 #Счётчик до приказа в финашку
 
-fa_aa = '2019-08-03'.split('-')
+fa_aa = '2019-08-01'.split('-')
 fa_counter = datetime.date(int(fa_aa[0]), int(fa_aa[1]), int(fa_aa[2]))
 
 
@@ -243,7 +243,7 @@ while True:
         '5': '4ПКС-116 | ' + str(dd) + ' день лета',
         '6': 'I Курс | ' + str(dd) + ' день лета',
         '7': 'FA | До приказа ' + str(fa_dd) + ' '+fa_days,
-        '8': 'ПМИИТ 2019 | ' + str(dd) + ' день лета',
+        '8': 'ПМиИТ | До приказа ' + str(fa_dd) + ' '+fa_days,
     }
 
     # Чекаем дни рождения
