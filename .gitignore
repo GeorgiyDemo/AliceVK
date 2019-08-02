@@ -1,5 +1,3 @@
-
-tokens.yaml
 *.pyc
-*.jpg
 *.idea
+*.yaml
