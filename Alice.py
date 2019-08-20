@@ -1,6 +1,7 @@
 import datetime
 import time
-
+from pytils import numeral
+from pytils.third import six
 import vk
 
 import GetSettingsModule
@@ -33,8 +34,8 @@ class AliceClass(object):
         self.api = vk.API(session)
         self.api_version = API_VERSION
 
-        # Счетчик от 1 июня
-        a = '2019-06-01'.split('-')
+        # Счетчик до 1 сентября
+        a = '2019-09-01'.split('-')
         self.counter = datetime.date(int(a[0]), int(a[1]), int(a[2]))
 
         while True:
@@ -45,22 +46,22 @@ class AliceClass(object):
 
         # Счетчик дней лета
         bb = datetime.date.today()
-        cc = bb - self.counter
+        cc = self.counter - bb
         dd = int(str(cc).split()[0]) + 1
 
-        # fa_days = word_formater(numeral.choose_plural(int(fa_dd), (u'день', u'дня', u'дней')))
-        # left = word_formater(numeral.choose_plural(int(dd), (u'Остался', u'Осталось', u'Осталось')))
+        left_days = self.word_formater(numeral.choose_plural(int(dd), (u'день', u'дня', u'дней')))
+        left_str = self.word_formater(numeral.choose_plural(int(dd), (u'Остался', u'Осталось', u'Осталось')))
 
         # Названия чатиков
         chat_titles = {
-            '1': 'IV Курс | ' + str(dd) + ' день лета',
-            '2': 'III Курс | ' + str(dd) + ' день лета',
-            '3': '3ПКС-117 | ' + str(dd) + ' день лета',
-            '4': 'II Курс | ' + str(dd) + ' день лета',
-            '5': '4ПКС-116 | ' + str(dd) + ' день лета',
-            '6': 'I Курс | ' + str(dd) + ' день лета',
-            '7': 'FA | ' + str(dd) + ' день лета',
-            '8': 'ПМиИТ | ' + str(dd) + ' день лета',
+            '1': 'IV Курс | ' + left_str + " " + str(dd) + " " + left_days,
+            '2': 'III Курс | ' + left_str + " " + str(dd) + " " + left_days,
+            '3': '3ПКС-117 | ' + left_str + " " + str(dd) + " " + left_days,
+            '4': 'II Курс | ' + left_str + " " + str(dd) + " " + left_days,
+            '5': '4ПКС-116 | ' + left_str + " " + str(dd) + " " + left_days,
+            '6': 'I Курс | ' + left_str + " " + str(dd) + " " + left_days,
+            '7': 'FA | ' + left_str + " " + str(dd) + " " + left_days,
+            '8': 'ПМиИТ | ' + left_str + " " + str(dd) + " " + left_days,
         }
 
         # Чекаем названия бесед
@@ -77,7 +78,6 @@ class AliceClass(object):
                     continue
 
     def word_formater(self, s):
-        from pytils.third import six
         if six.PY3:
             out = s
         else:
