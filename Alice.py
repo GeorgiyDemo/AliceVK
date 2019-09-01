@@ -45,23 +45,22 @@ class AliceClass(object):
     def processing_method(self):
 
         # Счетчик дней лета
-        bb = datetime.date.today()
-        cc = self.counter - bb
+        cc = datetime.date.today() - self.counter
         dd = int(str(cc).split()[0]) + 1
 
-        left_days = self.word_formater(numeral.choose_plural(int(dd), (u'день', u'дня', u'дней')))
-        left_str = self.word_formater(numeral.choose_plural(int(dd), (u'Остался', u'Осталось', u'Осталось')))
+        #left_days = self.word_formater(numeral.choose_plural(int(dd), (u'день', u'дня', u'дней')))
+        #left_str = self.word_formater(numeral.choose_plural(int(dd), (u'Остался', u'Осталось', u'Осталось')))
 
         # Названия чатиков
         chat_titles = {
-            '1': 'IV Курс | ' + left_str + " " + str(dd) + " " + left_days,
-            '2': 'III Курс | ' + left_str + " " + str(dd) + " " + left_days,
-            '3': '3ПКС-117 | ' + left_str + " " + str(dd) + " " + left_days,
-            '4': 'II Курс | ' + left_str + " " + str(dd) + " " + left_days,
-            '5': '4ПКС-116 | ' + left_str + " " + str(dd) + " " + left_days,
-            '6': 'I Курс | ' + left_str + " " + str(dd) + " " + left_days,
-            '7': 'FA | ' + left_str + " " + str(dd) + " " + left_days,
-            '8': 'ПМиИТ | ' + left_str + " " + str(dd) + " " + left_days,
+            '1': 'IV Курс | ' + str(dd) + " день учёбы",
+            '2': 'III Курс | ' + str(dd) + " день учёбы",
+            '3': '3ПКС-117 | '  + str(dd) + " день учёбы",
+            '4': 'II Курс | ' + str(dd) + " день учёбы",
+            '5': '4ПКС-116 | '  + str(dd) + " день учёбы",
+            '6': 'I Курс | '  + str(dd) + " день учёбы",
+            '7': 'FA | ' + str(dd) + " день учёбы",
+            '8': 'ПМиИТ | '  + str(dd) + " день учёбы",
         }
 
         # Чекаем названия бесед
