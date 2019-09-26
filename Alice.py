@@ -1,6 +1,5 @@
 import datetime
 import time
-from pytils import numeral
 from pytils.third import six
 import vk
 
