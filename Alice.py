@@ -35,7 +35,7 @@ class AliceClass(object):
         self.api_version = API_VERSION
 
         # Счетчик до 1 сентября
-        a = '2020-01-01'.split('-')
+        a = '2019-12-31'.split('-')
         self.counter = datetime.date(int(a[0]), int(a[1]), int(a[2]))
 
         while True:
@@ -46,7 +46,7 @@ class AliceClass(object):
 
         # Счетчик дней до НГ
         cc = self.counter - datetime.date.today()
-        dd = int(str(cc).split()[0]) + 1
+        dd = int(str(cc).split()[0])
 
         left_days = self.word_formater(numeral.choose_plural(int(dd), (u'день', u'дня', u'дней')))
         #left_str = self.word_formater(numeral.choose_plural(int(dd), (u'Остался', u'Осталось', u'Осталось')))
