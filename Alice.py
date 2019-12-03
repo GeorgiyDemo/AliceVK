@@ -35,7 +35,7 @@ class AliceClass(object):
         self.api_version = API_VERSION
 
         # Счетчик до 1 сентября
-        a = '2019-09-01'.split('-')
+        a = '2020-01-01'.split('-')
         self.counter = datetime.date(int(a[0]), int(a[1]), int(a[2]))
 
         while True:
@@ -44,23 +44,23 @@ class AliceClass(object):
 
     def processing_method(self):
 
-        # Счетчик дней лета
-        cc = datetime.date.today() - self.counter
+        # Счетчик дней до НГ
+        cc = self.counter - datetime.date.today()
         dd = int(str(cc).split()[0]) + 1
 
-        #left_days = self.word_formater(numeral.choose_plural(int(dd), (u'день', u'дня', u'дней')))
+        left_days = self.word_formater(numeral.choose_plural(int(dd), (u'день', u'дня', u'дней')))
         #left_str = self.word_formater(numeral.choose_plural(int(dd), (u'Остался', u'Осталось', u'Осталось')))
 
         # Названия чатиков
         chat_titles = {
-            '1': 'IV Курс | ' + str(dd) + " день учёбы",
-            '2': 'III Курс | ' + str(dd) + " день учёбы",
-            '3': '3ПКС-117 | '  + str(dd) + " день учёбы",
-            '4': 'II Курс | ' + str(dd) + " день учёбы",
-            '5': '4ПКС-116 | '  + str(dd) + " день учёбы",
-            '6': 'I Курс | '  + str(dd) + " день учёбы",
-            '7': 'FA | ' + str(dd) + " день учёбы",
-            '8': 'ПМиИТ | '  + str(dd) + " день учёбы",
+            '1': 'IV Курс | До НГ '+ str(dd)+' '+left_days,
+            '2': 'III Курс | До НГ '+ str(dd)+' '+left_days,
+            '3': '3ПКС-117 | До НГ '+ str(dd)+' '+left_days,
+            '4': 'II Курс | До НГ '+ str(dd)+' '+left_days,
+            '5': '4ПКС-116 | До НГ '+ str(dd)+' '+left_days,
+            '6': 'I Курс | До НГ '+ str(dd)+' '+left_days,
+            '7': 'FA | До НГ '+ str(dd)+' '+left_days,
+            '8': 'ПМиИТ | До НГ '+ str(dd)+' '+left_days,
         }
 
         # Чекаем названия бесед
